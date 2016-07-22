@@ -139,12 +139,9 @@ private:
     //Create the pipeline when the vehicle launch
     void    createOriginPipeline(); 
     
-    //Call back function for processing the message queue
-    void    receiveMsgFromFSMCallBack();                 
-
     //Process the message                     
-    void    msgProcess(void*  msg);                             
-
+    void    handleMsg(void *msg,void *data)
+                             
     //Retrieve errors from the bus 
     void    gstErrorCallBack();
 
@@ -153,6 +150,24 @@ private:
 
     //Clear the resource
     void    finalize();
+
+    void modeChangeDailyToEmergency();
+    void modeChangeDailyToCapture();
+    void modeChangeDailyToRecord();
+    void modeChangeDailyToRemote();
+    void modeChangeRemoteToEmergency();
+    void modeChangeRemoteToCapture();
+    void modeChangeRemoteToRecord();
+    void modeChangeRemoteToDaily();
+    void modeChangeRecordToEmergency();
+    void modeChangeRecordToCapture();
+    void modeChangeRecordToDaily();
+    void modeChangeCaptureToEmergency();
+    void modeChangeCaptureToRecord();
+    void modeChangeCaptureToDaily();
+
+    typedef void (MlcService::*func)(void *msg, void *data);
+    static const func videoMonitorAPI[];
 };
 
 #endif // VIDEOMONITOR_H

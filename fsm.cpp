@@ -1,8 +1,6 @@
 #include "fsm.h"
 
 
-
-
 FSM *FSM::mInstance = NULL;
 
 //--------------------------------------------------------------------------
@@ -45,36 +43,6 @@ void FSM::pluginInit(void *data){
     p_queue = g_async_queue_new ();
 
 }
-
-
-void *PluginSocket::Run(void *arg)
-{
-    void *ps_message = NULL;
-    LOGGER_DBG("PluginSocket::Run");
-    PluginSocket *ctxFSM = static_cast<PluginSocket *>(arg);
-
-    while(1)
-    {
-        //waiting..............
-        //lock
-        pthread_mutex_lock(ctxFSM->getMutexP());
-        while(ctxFSM->msgListEmpty())
-        {
-            LOGGER_DBG(">>>thread sleepping, PluginSocket::Run");
-            //wait  wake up
-            pthread_cond_wait(ctxFSM->getCondP(), ctxFSM->getMutexP());
-            LOGGER_DBG(">>>thread is waked up, PluginSocket::Run");
-        }
-        ps_message = ctxFSM->getMsgFromListFront();
-        //unlock
-        pthread_mutex_unlock(ctxFSM->getMutexP());
-        ctxFSM->handleMsg(ps_message,arg);
-    }
-    return NULL;
-}
-
-
-
 
 void * FSM::pluginRun(void *data){
 	/*Generate the FSM */

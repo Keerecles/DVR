@@ -1,7 +1,11 @@
 #ifndef FSM_H
 #define FSM_H
 
+#include <list.h>
+#include <string>
 
+#include <engine.h>
+#include <message.h>
 
 enum EVENT_CODE {
     PIPELINE_SWITCH_MODE_DAILY,
@@ -93,20 +97,20 @@ private:
     static Transition createTransition(WorkMode modeFrom, WorkMode modeTo,
                                       EVENT_CODE event, void (*onTransition)());
 
-    void FSM::modeChangeDailyToEmergency();
-    void FSM::modeChangeDailyToCapture();
-    void FSM::modeChangeDailyToRecord();
-    void FSM::modeChangeDailyToRemote();
-    void FSM::modeChangeRemoteToEmergency();
-    void FSM::modeChangeRemoteToCapture();
-    void FSM::modeChangeRemoteToRecord();
-    void FSM::modeChangeRemoteToDaily();
-    void FSM::modeChangeRecordToEmergency();
-    void FSM::modeChangeRecordToCapture();
-    void FSM::modeChangeRecordToDaily();
-    void FSM::modeChangeCaptureToEmergency();
-    void FSM::modeChangeCaptureToRecord();
-    void FSM::modeChangeCaptureToDaily();
+    void modeChangeDailyToEmergency();
+    void modeChangeDailyToCapture();
+    void modeChangeDailyToRecord();
+    void modeChangeDailyToRemote();
+    void modeChangeRemoteToEmergency();
+    void modeChangeRemoteToCapture();
+    void modeChangeRemoteToRecord();
+    void modeChangeRemoteToDaily();
+    void modeChangeRecordToEmergency();
+    void modeChangeRecordToCapture();
+    void modeChangeRecordToDaily();
+    void modeChangeCaptureToEmergency();
+    void modeChangeCaptureToRecord();
+    void modeChangeCaptureToDaily();
 };
 
 #endif // FSM

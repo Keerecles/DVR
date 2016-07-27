@@ -12,24 +12,24 @@
 #include "videomonitor.h"
 
 const VideoMonitor::func VideoMonitor::videoMonitorAPI[] = {
-	&VideoMonitor::modeChangeDailyToEmergency()£¬
-    &VideoMonitor::modeChangeDailyToCapture()£¬
-    &VideoMonitor::modeChangeDailyToRecord()£¬
-    &VideoMonitor::modeChangeDailyToRemote()£¬
-    &VideoMonitor::modeChangeRemoteToEmergency()£¬
-    &VideoMonitor::modeChangeRemoteToCapture()£¬
-    &VideoMonitor::modeChangeRemoteToRecord()£¬
-    &VideoMonitor::modeChangeRemoteToDaily()£¬
-    &VideoMonitor::modeChangeRecordToEmergency()£¬
-    &VideoMonitor::modeChangeRecordToCapture()£¬
-    &VideoMonitor::modeChangeRecordToDaily()£¬
-    &VideoMonitor::modeChangeCaptureToEmergency()£¬
-    &VideoMonitor::modeChangeCaptureToRecord()£¬
-    &VideoMonitor::modeChangeCaptureToDaily()£¬
+  &VideoMonitor::modeChangeDailyToEmergency()ï¼Œ
+  &VideoMonitor::modeChangeDailyToCapture()ï¼Œ
+  &VideoMonitor::modeChangeDailyToRecord()ï¼Œ
+  &VideoMonitor::modeChangeDailyToRemote()ï¼Œ
+  &VideoMonitor::modeChangeRemoteToEmergency()ï¼Œ
+  &VideoMonitor::modeChangeRemoteToCapture()ï¼Œ
+  &VideoMonitor::modeChangeRemoteToRecord()ï¼Œ
+  &VideoMonitor::modeChangeRemoteToDaily()ï¼Œ
+  &VideoMonitor::modeChangeRecordToEmergency()ï¼Œ
+  &VideoMonitor::modeChangeRecordToCapture()ï¼Œ
+  &VideoMonitor::modeChangeRecordToDaily()ï¼Œ
+  &VideoMonitor::modeChangeCaptureToEmergency()ï¼Œ
+  &VideoMonitor::modeChangeCaptureToRecord()ï¼Œ
+  &VideoMonitor::modeChangeCaptureToDaily()ï¼Œ
 };
 
 static void *VideoMonitor::gstMainThread(void *usrdata){
-	/* init the gstreamer*/
+  	/* init the gstreamer*/
 	gst_init(NULL,NULL);
 	/* Create our own GLib Main Context and make it the default one */
   	mContext = g_main_context_new ();
@@ -41,31 +41,38 @@ static void *VideoMonitor::gstMainThread(void *usrdata){
 	setPipelineBusandSignal();
 
 	/*Check if all conditions are met to report GStreamer as initialized.*/
-    // gst_x_overlay_set_window_handle  getNativeWindow()
+  	// gst_x_overlay_set_window_handle  getNativeWindow()
 
 
 
+  	/*Play the init pipeline*/
+	gst_element_set_state (mPipeline, GST_STATE_PLAYING);
+
+
+
+
+	
 	/* Create a GLib Main Loop and set it to run */
-    mPluginGMainLoop = g_main_loop_new (mContext, FALSE);
-    g_main_loop_run (mPluginGMainLoop);
-    g_main_loop_unref (mPluginGMainLoop);
-    mPluginGMainLoop = NULL;
-  
-    /* Free resources */
-    g_main_context_pop_thread_default(mContext);
-    g_main_context_unref (mContext);
-    gst_element_set_state (mPipeline, GST_STATE_NULL);
-    gst_object_unref (mPipeline);
+  	mPluginGMainLoop = g_main_loop_new (mContext, FALSE);
+  	g_main_loop_run (mPluginGMainLoop);
+  	g_main_loop_unref (mPluginGMainLoop);
+  	mPluginGMainLoop = NULL;
+	
+  	/* Free resources */
+  	g_main_context_pop_thread_default(mContext);
+  	g_main_context_unref (mContext);
+  	gst_element_set_state (mPipeline, GST_STATE_NULL);
+  	gst_object_unref (mPipeline);
 }
 
 void VideoMonitor::createOriginPipeline(){
 
 	/* Create the empty pipeline */
-	mPipeline = gst_pipeline_new ("DVR_WORK_PIPEPLINE");
+	  mPipeline = gst_pipeline_new ("DVR_WORK_PIPEPLINE");
 
 	/* Create the elements */
     mVideoSrc = gst_element_factory_make ("videotextsrc", "mVideoSrc");
-    mTee 	  = gst_element_factory_make ("tee", "Tee");
+    mTee 	    = gst_element_factory_make ("tee", "Tee");
     mQueue1   = gst_element_factory_make ("queue", "mQueue1");
     mQueue2   = gst_element_factory_make ("queue", "mQueue2");
     mQueue3   = gst_element_factory_make ("queue", "mQueue3");
@@ -75,27 +82,27 @@ void VideoMonitor::createOriginPipeline(){
     mQueue7   = gst_element_factory_make ("queue", "mQueue7");
 
     /*Elements for DailyMonitor Pipeline*/
-  	mDailyMonitorSink = gst_element_factory_make ("filesink", "mDailyMonitorSink");
+  	mDailyMonitorSink = gst_element_factory_make ("fakesink", "mDailyMonitorSink");
   	
   	/*Elements for EmergencyMonitor Pipeline*/
-  	mEmergencySink    = gst_element_factory_make ("filesink", "mEmergencySink");
+  	mEmergencySink    = gst_element_factory_make ("fakesink", "mEmergencySink");
   	
   	/*Elements for HMI Pipeline*/
-  	mHIMSink = gst_element_factory_make ("autovideosink", "mHIMSink");
+  	mHIMSink = gst_element_factory_make ("fakesink", "mHIMSink");
   	
   	/*Elements for Video Segment record Pipeline*/
   	mVideoSegRecordSink = gst_element_factory_make ("fakesink", "mVideoSegRecordSink");
    	
 	/*Elements for SnapShoot Pipeline*/
-   	mSnapshootSink = gst_element_factory_make ("filesink", "mSnapshootSink");
+   	mSnapshootSink = gst_element_factory_make ("fakesink", "mSnapshootSink");
   	mPicEnc = gst_element_factory_make ("pngenc", "mPicEnc");
 
 
 	/*Elements for Phone Link Pipeline*/
-  	mUdpPhoneSink = gst_element_factory_make ("udpsink", "mUdpPhoneSink");
+  	mUdpPhoneSink = gst_element_factory_make ("fakesink", "mUdpPhoneSink");
   	
 	/*Elements for Cloud Pipeline*/
-  	mUdpCloudSink = gst_element_factory_make ("udpsink", "mUdpCloudSink");
+  	mUdpCloudSink = gst_element_factory_make ("fakesink", "mUdpCloudSink");
   	
 	if (!mPipeline || !mVideoSrc || !mTee
 		|| !mQueue1 || !mQueue2 || !mQueue3 || !mQueue4 || !mQueue5 || !mQueue6 || !mQueue7
@@ -113,14 +120,14 @@ void VideoMonitor::createOriginPipeline(){
 	}
 	
 	/* Configure elements */
-	g_object_set (mVideoSrc, "device", "/dev/video1", NULL);
-  	g_object_set (mDailyMonitorSink, "location", "/mnt/sdcard/DVRDATA/DAILY/", NULL);
-  	g_object_set (mEmergencySink, "location", "/mnt/sdcard/DVRDATA/EMERGENCY/", NULL);
-  	g_object_set (mHIMSink, "width",1280,"height",720, NULL);
-  	g_object_set (mVideoSegRecordSink, "location", "/mnt/sdcard/DVRDATA/Vod", NULL);
-  	g_object_set (mSnapshootSink, "location", "/mnt/sdcard/DVRDATA/Pic", NULL);
-  	g_object_set (mUdpPhoneSink, "host", "127.0.0.1", "port", 8004, NULL);  
-  	g_object_set (mUdpCloudSink, "host", "127.0.0.1", "port", 8004, NULL);	
+	// g_object_set (mVideoSrc, "device", "/dev/video1", NULL);
+ //  	g_object_set (mDailyMonitorSink, "location", "/mnt/sdcard/DVRDATA/DAILY/", NULL);
+ //  	g_object_set (mEmergencySink, "location", "/mnt/sdcard/DVRDATA/EMERGENCY/", NULL);
+ //  	g_object_set (mHIMSink, "width",1280,"height",720, NULL);
+ //  	g_object_set (mVideoSegRecordSink, "location", "/mnt/sdcard/DVRDATA/Vod", NULL);
+ //  	g_object_set (mSnapshootSink, "location", "/mnt/sdcard/DVRDATA/Pic", NULL);
+ //  	g_object_set (mUdpPhoneSink, "host", "127.0.0.1", "port", 8004, NULL);  
+ //  	g_object_set (mUdpCloudSink, "host", "127.0.0.1", "port", 8004, NULL);	
 
   	/* Link all elements that can be automatically linked because they have "Always" pads */
   	gst_bin_add_many (GST_BIN (pipeline),mVideoSrc
@@ -344,26 +351,6 @@ void VideoMonitor::getNativeWindow(){
 	//aquire the native window from Qt view
 }
 
-void *VideoMonitor::receiveMsgFromFSM(void *  msg){
-	
-    void *ps_message = NULL;
-    VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(msg);
-    while(TRUE)
-    {
-        ps_message = g_async_queue_pop(ctxVideoMonitor->p_queue);
-        ctxVideoMonitor->msgProcess(ps_message);
-    }
-    return NULL;
-}
-
-void VideoMonitor::sendMessage(void *obj, void *msg){
-	
-	VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(obj);
-    g_async_queue_lock (ctxVideoMonitor->ctxEngine->p_queue);
-    g_async_queue_push_unlocked (ctxVideoMonitor->ctxEngine->p_queue,msg);
-    g_async_queue_unlock (ctxVideoMonitor->ctxEngine->p_queue);   
-}
-
 void VideoMonitor::gstErrorCallBack(GstBus *bus, GstMessage *msg){
 	GError *err;
   	gchar *debug_info;
@@ -383,138 +370,60 @@ void VideoMonitor::finalize(){
 }
 
 /*Function to change the mode of pipeline*/
-void FSM::modeChangeDailyToEmergency(){
+void VideoMonitor::modeChangeDailyToEmergency(){
     
 
     return NULL;
 }
-void FSM::modeChangeDailyToCapture(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_CAPTURE,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeDailyToCapture(){
+
     return NULL;
 }
-void FSM::modeChangeDailyToRecord(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_RECORD,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeDailyToRecord(){
+   
     return NULL;
 }
-void FSM::modeChangeDailyToRemote(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_REMOTE,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeDailyToRemote(){
+    
     return NULL;
 }
-void FSM::modeChangeRemoteToEmergency(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_EMERGENCY,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRemoteToEmergency(){
+    
     return NULL;
 }
-void FSM::modeChangeRemoteToCapture(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_CAPTURE,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRemoteToCapture(){
+    
     return NULL;
 }
-void FSM::modeChangeRemoteToRecord(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_RECORD,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRemoteToRecord(){
+   
     return NULL;
 }
-void FSM::modeChangeRemoteToDaily(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_DAILY,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRemoteToDaily(){
+    
     return NULL;
 }
-void FSM::modeChangeRecordToEmergency(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_RECORD_TO_EMERGENCY,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRecordToEmergency(){
+    
     return NULL;
 }
-void FSM::modeChangeRecordToCapture(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_RECORD_TO_CAPRURE,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRecordToCapture(){
+    
     return NULL;
 }
-void FSM::modeChangeRecordToDaily(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_DRECORD_TO_DAILY,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeRecordToDaily(){
+   
     return NULL;
 }
-void FSM::modeChangeCaptureToEmergency(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_CAPTURE_TO_EMERGENCY,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeCaptureToEmergency(){
+    
     return NULL;
 }
-void FSM::modeChangeCaptureToRecord(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_CAPTURE_TO_RECORD,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeCaptureToRecord(){
+    
     return NULL;
 }
-void FSM::modeChangeCaptureToDaily(){
-    Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
-    ctxMsg->destination = "Engine";
-    ctxMsg->opertation_id = PIPELINE_WORKMODE_CAPTURE_TO_DAILY,;
-    ctxMsg->dataListVoid.push_back(mInstance);
-    ctxMsg->funcList.push_back(thread);
-    sendMessage(mInstance, ctxMsg);
+void VideoMonitor::modeChangeCaptureToDaily(){
+    
     return NULL;
 }

@@ -1,0 +1,96 @@
+#ifndef FSM_H
+#define FSM_H
+
+#include <pthread.h>
+#include <map>
+#include <iostream>
+//#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <string>
+#include <list>
+//#include <sstrseam>
+#include "core/include/commonType.h"
+
+#include "core/include/cJSON.h"
+#include "core/include/threadManager.h"
+#include "core/include/message.h"
+class Engine;
+
+enum EVENT_CODE {
+    PIPELINE_SWITCH_MODE_DAILY,
+    PIPELINE_SWITCH_MODE_EMERGENCY,
+    PIPELINE_SWITCH_MODE_REMOTE,
+    PIPELINE_SWITCH_MODE_LOWPOWER,
+    PIPELINE_SWITCH_MODE_RECORD,
+    PIPELINE_SWITCH_MODE_CAPTURE,
+    PIPELINE_SWITCH_MODE__MAX_NUMBER,
+};
+
+enum WorkMode{
+    PIPELINE_WORK_MODE_DAILY,
+    PIPELINE_WORK_MODE_EMERGENCY,
+    PIPELINE_WORK_MODE_REMOTE,
+    PIPELINE_WORK_MODE_LOWPOWER,
+    PIPELINE_WORK_MODE_RECORD,
+    PIPELINE_WORK_MODE_CAPTURE,
+    PIPELINE_WORK_MODE_ANY,
+};
+
+typedef struct _Transition
+{
+  WorkMode modeFrom;
+  WorkMode modeTo;
+  EVENT_CODE event;
+  void (*onTransition)();
+}Transition;
+
+class FSM : public Base
+{
+public:
+    static FSM* getInstance();                                  //get instance of FSM
+    FSM();
+    FSM(WorkMode initworkmode);                                 //default constructor
+    ~FSM();                                                     //destructor
+    void Init(void *data);                                      //plugin initialize
+    static void * Run(void *arg);                               //run plugin
+    void handleMsg(void *msg,void *data);
+    void startNewThread(void *(threadFunc)(void *),void *data); //create a thread(add a msg of create thread, to list of <engine>, create thread at <engine>)
+    void sendMessage(void *msg,void *data);
+
+    typedef void (FSM::*func)(void *msg, void *data);
+    static const func FSMAPI[];
+
+private:
+    void generateFSM();
+    void addTransition(WorkMode modeFrom, WorkMode modeTo, EVENT_CODE event,
+                      void (*onTransition)());
+    void trigger(EVENT_CODE event);
+    Transition createTransition(WorkMode modeFrom, WorkMode modeTo,
+                                      EVENT_CODE event, void (*onTransition)());
+
+    static void modeChangeDailyToEmergency();
+    static void modeChangeDailyToCapture();
+    static void modeChangeDailyToRecord();
+    static void modeChangeDailyToRemote();
+    static void modeChangeRemoteToEmergency();
+    static void modeChangeRemoteToCapture();
+    static void modeChangeRemoteToRecord();
+    static void modeChangeRemoteToDaily();
+    static void modeChangeRecordToEmergency();
+    static void modeChangeRecordToCapture();
+    static void modeChangeRecordToDaily();
+    static void modeChangeCaptureToEmergency();
+    static void modeChangeCaptureToRecord();
+    static void modeChangeCaptureToDaily();
+private:
+    static FSM* mInstance;
+    Engine *ctxEngine;
+
+    WorkMode mCurrentWorkMode;
+    std::list<Transition> mTransitionList;
+    pthread_mutex_t mutexTransitionList;
+
+};
+
+#endif // FSM

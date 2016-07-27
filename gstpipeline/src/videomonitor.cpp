@@ -1,0 +1,127 @@
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pthread.h>
+
+#include <gst/gst.h>
+#include <gst/video/video.h>
+#include <gst/app/gstappsink.h>
+#include <gst/interfaces/xoverlay.h>
+#include <gst/video/video.h>
+#include "videomonitor.h"
+
+VideoMonitor *VideoMonitor::mInstance = NULL;
+
+//--------------------------------------------------------------------------
+/**
+ *  @brief  default constructor
+ */
+//--------------------------------------------------------------------------
+VideoMonitor::VideoMonitor(): Base("VideoMonitor")
+{
+	VideoMonitor::mInstance = this;
+}
+
+//--------------------------------------------------------------------------
+/**
+ *  @brief  default destructor
+ */
+//--------------------------------------------------------------------------
+VideoMonitor::~VideoMonitor()
+{
+    delete mInstance;
+}
+
+VideoMonitor *VideoMonitor::getInstance()
+{
+    if (NULL == mInstance) {
+        mInstance = new VideoMonitor();
+    }
+    return mInstance;
+}
+
+void VideoMonitor::Init(void *data)
+{
+    ctxEngine = static_cast<Engine*>(data);
+}
+
+void * VideoMonitor::Run(void *data)
+{	
+	/* Start the Gst main thread*/
+	startNewThread(gstMainThread,  ctxEngine);
+
+	void *psMessage = NULL;
+    LOGGER_DBG("VideoMonitor::Run");
+    VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(arg);
+
+    while(1)
+    {
+        //waiting..............
+        //lock
+        pthread_mutex_lock(ctxVideoMonitor->getMutexPtr());
+        while(ctxVideoMonitor->msgListEmpty())
+        {
+            LOGGER_DBG(">>>thread sleepping, VideoMonitor::Run");
+            //wait  wake up
+            pthread_cond_wait(ctxVideoMonitor->getCondPtr(), ctxVideoMonitor->getMutexPtr());
+            LOGGER_DBG(">>>thread is waked up, VideoMonitor::Run");
+        }
+        psMessage = ctxVideoMonitor->getMsgFromListFront();
+        //unlock
+        pthread_mutex_unlock(ctxVideoMonitor->getMutexPtr());
+        ctxVideoMonitor->handleMsg(psMessage,arg);
+    }
+    return NULL;
+}
+
+void FSM::handleMsg(void *msg,void *data)
+{
+    LOGGER_DBG("FSM::handleMsg");
+    if(NULL == msg ||data == NULL)
+    {
+        LOGGER_ERR("Invalid message,msg or data is NULL");
+        return NULL;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    if(E_SOCKET_FUNCTION_MAX_NUMBER <= ctxMsg->opertation_id)
+    {
+        LOGGER_ERR("Invalid message,have no opertation");
+        delete ctxMsg;
+        return NULL;
+    }
+    VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(data);
+    (ctxVideoMonitor->*videoMonitorAPI[ctxMsg->opertation_id])(msg, data);
+}
+
+void FSM::startNewThread(void *(threadFunc)(void *),void *data)
+{	
+    if(threadFunc==NULL||data==NULL)
+    {
+        return;
+    }
+    VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(data);
+    Message *ctxMsg = new Message();
+    ctxMsg->origin = getClassName();
+    ctxMsg->destination = "Engine";
+    ctxMsg->opertation_id = E_ENGINE_FUNCTION_START_NEW_THREAD;
+    ctxMsg->dataListVoid.push_back(ctxVideoMonitor);
+    ctxMsg->funcList.push_back(threadFunc);
+    sendMessage(ctxMsg, ctxVideoMonitor);
+}
+
+void VideoMonitor::sendMessage(void *obj, void *msg){
+    
+    if(msg==NULL||data==NULL)
+    {
+        return;
+    }
+    VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(data);
+    //lock
+    pthread_mutex_lock(ctxVideoMonitor->ctxEngine->getMutexPtr());
+    ctxVideoMonitor->ctxEngine->addMsgToListBack(msg);
+    //wake up Engine::Run
+    pthread_cond_signal(ctxVideoMonitor->ctxEngine->getCondPtr());
+    //unlock
+    pthread_mutex_unlock(ctxVideoMonitor->ctxEngine->getMutexPtr());
+}
+

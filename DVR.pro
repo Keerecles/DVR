@@ -12,8 +12,19 @@ SOURCES += main.cpp \
     native.cpp \
     appiconprovider.cpp \
     downloadmanager.cpp \
-    videomonitor.cpp \
-    fsm.cpp
+    core/src/base.cpp \
+    core/src/engine.cpp \
+    core/src/log.cpp \
+    core/src/main.cpp \
+    core/src/threadManager.cpp \
+    fsm/src/fsm.cpp \
+    gstpipeline/src/videomonitor.cpp \
+    gstpipeline/src/videomonitorgst.cpp \
+    core/src/cJSON.c \
+    fsm/src/fsmApi.cpp \
+    socket/src/pluginSocket.cpp \
+    socket/src/pluginSocketApi.cpp
+
 
 RESOURCES += qml.qrc
 
@@ -28,8 +39,17 @@ HEADERS += \
     packagemanager.h \
     appiconprovider.h \
     downloadmanager.h \
-    videomonitor.h \
-    fsm.h
+    core/include/base.h \
+    core/include/cJSON.h \
+    core/include/commonType.h \
+    core/include/engine.h \
+    core/include/log.h \
+    core/include/message.h \
+    core/include/threadManager.h \
+    fsm/include/fsm.h \
+    gstpipeline/include/videomonitor.h \
+    socket/include/pluginSocket.h
+
 
 DISTFILES += \
     android/AndroidManifest.xml \

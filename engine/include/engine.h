@@ -1,22 +1,12 @@
-#ifndef _COMMON_H_
-#define _COMMON_H_
-#include <pthread.h>
+#ifndef __ENGINE_H__
+#define __ENGINE_H__
 
-
-#define MSG_KEY_BIND "bind"
-#define MSG_KEY_DESTINATION "destination"
-#define MSG_KEY_ORIGIN "origin"
-#define MSG_KEY_RECEIVER "receiver"
-#define MSG_KEY_OPID "functionid"
-
-#define SOCKET_PATH "/tmp/socket_path"
-#define CONNECT_CLIENT_MAX 5
-
-#define SOCKET_MSG_LENGTH 1024
-
-
-typedef int t_int;
-typedef unsigned int t_uint;
+#include <map>
+#include "commonType.h"
+#include "base.h"
+#include "pluginSocket.h"
+#include "cJSON.h"
+#include "log.h"
 
 /*ENUM type for DVR*/
 enum EVENT_CODE {
@@ -57,30 +47,30 @@ enum WORK_MODE_CHANGE_CODE{
 };
 
 /*ENUM type for DVR end*/
-enum ERROR_CODE {
-    E_OPERATION_ERROR_NONE,
-    E_OPERATION_ERROR_PARA,
-    E_OPERATION_ERROR_NOT_INIT,
-    E_OPERATION_ERROR_THREAD_CREATE,
-    E_OPERATION_ERROR_THREAD_NUM_MAX,
-    E_OPERATION_ERROR_FUNC_CALL,
-    E_OPERATION_ERROR_SOCKET_CONNECTION,
-    E_OPERATION_ERROR_WRITE_SOCKET,
-    E_OPERATION_ERROR_UNKNOW,
-};
-enum THREAD_NUM {
-    E_THREAD_NUM_1,
-    E_THREAD_NUM_2,
-    E_THREAD_NUM_3,
-    E_THREAD_NUM_4,
-    E_THREAD_NUM_MAX,
-};
-class ThreadData
-{
-public:
-    t_int thread_num;
-    pthread_t id[E_THREAD_NUM_MAX];
-    void *ctx;
+
+enum OPERATION_CODE_ENGINE {
+    E_ENGINE_FUNCTION_START_NEW_THREAD,
+    E_ENGINE_FUNCTION_ON_THREAD_TERMINATE,
+    E_ENGINE_FUNCTION_MAX_NUMBER,
 };
 
-#endif
+class Engine : public Base
+{
+    
+public:
+    static Engine* getInstance();
+    Engine();
+    ~Engine();
+    void Init(void *data);
+    static void * Run(void *arg);//get msg from queue
+    void handleMsg(void * msg,void *data);
+
+private:
+	static Engine *mInstance;//singleton pattern
+    std::map<std::string , void* > mModuleList;//save objects
+    void createModeObject(void *data);
+
+    t_int startNewThread(void *(threadMain)(void *), void *data);
+    t_int onThreadTerminate(std::string &pluginName, pthread_t thread_id);
+};
+#endif // __ENGINE_H__

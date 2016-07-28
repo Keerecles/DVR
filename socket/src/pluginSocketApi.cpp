@@ -68,12 +68,12 @@ t_int PluginSocket::sendMessageToClient(void *msg, void *data)
     {
         LOGGER_DBG("<<<SEND_msg=%s",ctxMsg->dataListString[0].c_str());
         write(itClientFd->second,ctxMsg->dataListString[0].c_str() ,SOCKET_MSG_LENGTH);
-        delete msg;
+        delete ctxMsg;
     }
     else
     {
         LOGGER_DBG("invalid message,have no receiver<fd>");
-        delete msg;
+        delete ctxMsg;
     }
     return E_OPERATION_ERROR_NONE;
 }

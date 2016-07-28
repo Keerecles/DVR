@@ -10,11 +10,12 @@
 #include <string>
 #include <list>
 //#include <sstrseam>
-#include "../../core/include/commonType.h"
+#include "commonType.h"
 
-#include "../../core/include/cJSON.h"
-#include "../../core/include/threadManager.h"
-#include "../../core/include/message.h"
+#include "cJSON.h"
+#include "threadManager.h"
+#include "message.h"
+#include "engine.h"
 class Engine;
 
 class VideoMonitor : public Base
@@ -29,7 +30,7 @@ public:
     void startNewThread(void *(threadFunc)(void *),void *data); //create a thread(add a msg of create thread, to list of <engine>, create thread at <engine>)
     void sendMessage(void *msg,void *data);
 
-    typedef void (VideoMonitor::*func)(void *msg, void *data);
+    typedef t_int (VideoMonitor::*func)(void *msg, void *data);
     static const func videoMonitorAPI[];
 
 private:
@@ -46,20 +47,20 @@ private:
     void    logout();   //Logging   
     void    finalize(); //Clear the resource
 
-    void modeChangeDailyToEmergency(void *msg, void *data);
-    void modeChangeDailyToCapture(void *msg, void *data);
-    void modeChangeDailyToRecord(void *msg, void *data);
-    void modeChangeDailyToRemote(void *msg, void *data);
-    void modeChangeRemoteToEmergency(void *msg, void *data);
-    void modeChangeRemoteToCapture(void *msg, void *data);
-    void modeChangeRemoteToRecord(void *msg, void *data);
-    void modeChangeRemoteToDaily(void *msg, void *data);
-    void modeChangeRecordToEmergency(void *msg, void *data);
-    void modeChangeRecordToCapture(void *msg, void *data);
-    void modeChangeRecordToDaily(void *msg, void *data);
-    void modeChangeCaptureToEmergency(void *msg, void *data);
-    void modeChangeCaptureToRecord(void *msg, void *data);
-    void modeChangeCaptureToDaily(void *msg, void *data);
+    t_int modeChangeDailyToEmergency(void *msg, void *data);
+    t_int modeChangeDailyToCapture(void *msg, void *data);
+    t_int modeChangeDailyToRecord(void *msg, void *data);
+    t_int modeChangeDailyToRemote(void *msg, void *data);
+    t_int modeChangeRemoteToEmergency(void *msg, void *data);
+    t_int modeChangeRemoteToCapture(void *msg, void *data);
+    t_int modeChangeRemoteToRecord(void *msg, void *data);
+    t_int modeChangeRemoteToDaily(void *msg, void *data);
+    t_int modeChangeRecordToEmergency(void *msg, void *data);
+    t_int modeChangeRecordToCapture(void *msg, void *data);
+    t_int modeChangeRecordToDaily(void *msg, void *data);
+    t_int modeChangeCaptureToEmergency(void *msg, void *data);
+    t_int modeChangeCaptureToRecord(void *msg, void *data);
+    t_int modeChangeCaptureToDaily(void *msg, void *data);
 
 private:
     static VideoMonitor* mInstance;

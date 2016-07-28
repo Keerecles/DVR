@@ -11,11 +11,11 @@
 #include <string>
 #include <list>
 //#include <sstrseam>
-#include "core/include/commonType.h"
+#include "commonType.h"
 
-#include "core/include/cJSON.h"
-#include "core/include/threadManager.h"
-#include "core/include/message.h"
+#include "cJSON.h"
+#include "threadManager.h"
+#include "message.h"
 class Engine;
 enum OPERATION_CODE_SOCKET {
     E_SOCKET_FUNCTION_REGIST_IF,

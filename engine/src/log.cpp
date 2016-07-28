@@ -7,7 +7,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
-#include "core/include/log.h"
+#include "log.h"
 
 /*============================================================================*/
 /* global API                                                                 */

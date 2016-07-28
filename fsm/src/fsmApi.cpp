@@ -1,4 +1,4 @@
-#include "../include/fsm.h"
+#include "fsm.h"
 
 
 /*const FSM::func FSM::FSMAPI[] = {

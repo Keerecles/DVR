@@ -8,8 +8,8 @@
 #include <gst/app/gstappsink.h>
 //#include <gst/interfaces/xoverlay.h>
 #include <gst/video/video.h>
-#include "../include/videomonitor.h"
-#include "../../core/include/message.h"
+#include "videomonitor.h"
+#include "message.h"
 
 const VideoMonitor::func VideoMonitor::videoMonitorAPI[] = {
   &VideoMonitor::modeChangeDailyToEmergency,
@@ -263,60 +263,185 @@ void VideoMonitor::finalize(){
 }
 
 /*Function to change the mode of pipeline*/
-void VideoMonitor::modeChangeDailyToEmergency(void *msg, void *data){
+t_int VideoMonitor::modeChangeDailyToEmergency(void *msg, void *data){
     
+    if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
 
-    return ;
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeDailyToCapture(void *msg, void *data){
+t_int VideoMonitor::modeChangeDailyToCapture(void *msg, void *data){
 
-    return ;
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeDailyToRecord(void *msg, void *data){
+t_int VideoMonitor::modeChangeDailyToRecord(void *msg, void *data){
    
-    return ;
-}
-void VideoMonitor::modeChangeDailyToRemote(void *msg, void *data){
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
     
-    return ;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeRemoteToEmergency(void *msg, void *data){
+t_int VideoMonitor::modeChangeDailyToRemote(void *msg, void *data){
     
-    return ;
-}
-void VideoMonitor::modeChangeRemoteToCapture(void *msg, void *data){
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
     
-    return ;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeRemoteToRecord(void *msg, void *data){
+t_int VideoMonitor::modeChangeRemoteToEmergency(void *msg, void *data){
+    
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
+}
+t_int VideoMonitor::modeChangeRemoteToCapture(void *msg, void *data){
+    
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
+}
+t_int VideoMonitor::modeChangeRemoteToRecord(void *msg, void *data){
    
-    return ;
-}
-void VideoMonitor::modeChangeRemoteToDaily(void *msg, void *data){
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
     
-    return ;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeRecordToEmergency(void *msg, void *data){
+t_int VideoMonitor::modeChangeRemoteToDaily(void *msg, void *data){
     
-    return ;
-}
-void VideoMonitor::modeChangeRecordToCapture(void *msg, void *data){
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
     
-    return ;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeRecordToDaily(void *msg, void *data){
+t_int VideoMonitor::modeChangeRecordToEmergency(void *msg, void *data){
+    
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
+}
+t_int VideoMonitor::modeChangeRecordToCapture(void *msg, void *data){
+    
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
+}
+t_int VideoMonitor::modeChangeRecordToDaily(void *msg, void *data){
    
-    return ;
-}
-void VideoMonitor::modeChangeCaptureToEmergency(void *msg, void *data){
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
     
-    return ;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeCaptureToRecord(void *msg, void *data){
+t_int VideoMonitor::modeChangeCaptureToEmergency(void *msg, void *data){
     
-    return ;
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }
-void VideoMonitor::modeChangeCaptureToDaily(void *msg, void *data){
+t_int VideoMonitor::modeChangeCaptureToRecord(void *msg, void *data){
     
-    return ;
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
+}
+t_int VideoMonitor::modeChangeCaptureToDaily(void *msg, void *data){
+    
+     if(NULL == msg || NULL == data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+    Message *ctxMsg = static_cast<Message *>(msg);
+    
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+
+    delete ctxMsg;
+    return E_OPERATION_ERROR_NONE;
 }

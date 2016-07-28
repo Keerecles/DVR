@@ -8,8 +8,8 @@
 #include <gst/app/gstappsink.h>
 //#include <gst/interfaces/xoverlay.h>
 #include <gst/video/video.h>
-#include "../include/videomonitor.h"
-#include "core/include/engine.h"
+#include "videomonitor.h"
+#include "engine.h"
 
 VideoMonitor *VideoMonitor::mInstance = NULL;
 

@@ -1,6 +1,6 @@
 #include <iostream>
-#include "core/include/engine.h"
-#include "core/include/threadManager.h"
+#include "engine.h"
+#include "threadManager.h"
 int main()
 {
     Engine *engine = Engine::getInstance() ;
@@ -9,7 +9,7 @@ int main()
     ThreadManager *ctxTM = ThreadManager::getInstance();
     ctxTM->startThread(engine->Run,engine);
 
-#if 0
+#if 1
     pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
     pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
     while(1)

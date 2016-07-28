@@ -58,8 +58,7 @@ int PluginSocket::InitSocket()
 {
     int ret;
     struct sockaddr_un srvAddr;
-    pthread_t id;
-
+    
     LOGGER_DBG("PluginSocket::InitSocket start");
     listenFd=socket(PF_UNIX,SOCK_STREAM,0);
     if(listenFd<0)

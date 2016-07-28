@@ -1,4 +1,4 @@
-#include "core/include/threadManager.h"
+#include "threadManager.h"
 
 ThreadManager *ThreadManager::mInstance = NULL;
 //--------------------------------------------------------------------------

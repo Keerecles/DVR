@@ -6,9 +6,10 @@
 #include <gst/gst.h>
 #include <gst/video/video.h>
 #include <gst/app/gstappsink.h>
-#include <gst/interfaces/xoverlay.h>
+//#include <gst/interfaces/xoverlay.h>
 #include <gst/video/video.h>
-#include "videomonitor.h"
+#include "../include/videomonitor.h"
+#include "core/include/engine.h"
 
 VideoMonitor *VideoMonitor::mInstance = NULL;
 
@@ -45,10 +46,10 @@ void VideoMonitor::Init(void *data)
     ctxEngine = static_cast<Engine*>(data);
 }
 
-void * VideoMonitor::Run(void *data)
+void * VideoMonitor::Run(void *arg)
 {	
 	/* Start the Gst main thread*/
-	startNewThread(gstMainThread,  ctxEngine);
+	mInstance->startNewThread(gstMainThread,mInstance->ctxEngine);
 
 	void *psMessage = NULL;
     LOGGER_DBG("VideoMonitor::Run");
@@ -74,26 +75,26 @@ void * VideoMonitor::Run(void *data)
     return NULL;
 }
 
-void FSM::handleMsg(void *msg,void *data)
+void VideoMonitor::handleMsg(void *msg,void *data)
 {
-    LOGGER_DBG("FSM::handleMsg");
+    LOGGER_DBG("VideoMonitor::handleMsg");
     if(NULL == msg ||data == NULL)
     {
         LOGGER_ERR("Invalid message,msg or data is NULL");
-        return NULL;
+        return;
     }
     Message *ctxMsg = static_cast<Message *>(msg);
-    if(E_SOCKET_FUNCTION_MAX_NUMBER <= ctxMsg->opertation_id)
+    if(PIPELINE_SWITCH_MODE__MAX_NUMBER <= ctxMsg->opertation_id)
     {
         LOGGER_ERR("Invalid message,have no opertation");
         delete ctxMsg;
-        return NULL;
+        return;
     }
     VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(data);
     (ctxVideoMonitor->*videoMonitorAPI[ctxMsg->opertation_id])(msg, data);
 }
 
-void FSM::startNewThread(void *(threadFunc)(void *),void *data)
+void VideoMonitor::startNewThread(void *(threadFunc)(void *),void *data)
 {	
     if(threadFunc==NULL||data==NULL)
     {
@@ -109,7 +110,7 @@ void FSM::startNewThread(void *(threadFunc)(void *),void *data)
     sendMessage(ctxMsg, ctxVideoMonitor);
 }
 
-void VideoMonitor::sendMessage(void *obj, void *msg){
+void VideoMonitor::sendMessage(void *msg,void *data){
     
     if(msg==NULL||data==NULL)
     {

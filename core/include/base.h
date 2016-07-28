@@ -7,7 +7,7 @@
 class Base {
 public:
     Base(std::string className);                 // default constructor
-    ~Base();              // destructor
+    virtual ~Base();              // destructor
     std::string getClassName();  //get class name
     bool msgListEmpty();
     void * getMsgFromListFront();

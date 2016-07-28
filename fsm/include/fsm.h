@@ -17,26 +17,6 @@
 #include "core/include/message.h"
 class Engine;
 
-enum EVENT_CODE {
-    PIPELINE_SWITCH_MODE_DAILY,
-    PIPELINE_SWITCH_MODE_EMERGENCY,
-    PIPELINE_SWITCH_MODE_REMOTE,
-    PIPELINE_SWITCH_MODE_LOWPOWER,
-    PIPELINE_SWITCH_MODE_RECORD,
-    PIPELINE_SWITCH_MODE_CAPTURE,
-    PIPELINE_SWITCH_MODE__MAX_NUMBER,
-};
-
-enum WorkMode{
-    PIPELINE_WORK_MODE_DAILY,
-    PIPELINE_WORK_MODE_EMERGENCY,
-    PIPELINE_WORK_MODE_REMOTE,
-    PIPELINE_WORK_MODE_LOWPOWER,
-    PIPELINE_WORK_MODE_RECORD,
-    PIPELINE_WORK_MODE_CAPTURE,
-    PIPELINE_WORK_MODE_ANY,
-};
-
 typedef struct _Transition
 {
   WorkMode modeFrom;
@@ -58,14 +38,14 @@ public:
     void startNewThread(void *(threadFunc)(void *),void *data); //create a thread(add a msg of create thread, to list of <engine>, create thread at <engine>)
     void sendMessage(void *msg,void *data);
 
-    typedef void (FSM::*func)(void *msg, void *data);
+    typedef t_int (FSM::*func)(void *msg, void *data);
     static const func FSMAPI[];
 
 private:
     void generateFSM();
     void addTransition(WorkMode modeFrom, WorkMode modeTo, EVENT_CODE event,
                       void (*onTransition)());
-    void trigger(EVENT_CODE event);
+    t_int trigger(void *msg, void *data);
     Transition createTransition(WorkMode modeFrom, WorkMode modeTo,
                                       EVENT_CODE event, void (*onTransition)());
 

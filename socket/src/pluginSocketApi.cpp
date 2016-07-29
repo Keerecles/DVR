@@ -16,6 +16,7 @@ t_int PluginSocket::registIF(void *msg, void *data)
 
     if(NULL == msg || NULL == data)
     {
+        LOGGER_ERR("invalid msg || data!");
         return E_OPERATION_ERROR_PARA;
     }
 
@@ -23,9 +24,10 @@ t_int PluginSocket::registIF(void *msg, void *data)
 
     PluginSocket *ctxPluginSocket = static_cast<PluginSocket *>(data);
 
-    Base *ctxPluginIF = static_cast<Base *>(ctxMsg->dataListVoid[0]);
+    PluginIF *ctxPluginIF = static_cast<PluginIF *>(ctxMsg->dataListVoid[0]);
 
-    ctxPluginSocket->pluginIFList[ctxPluginIF->getClassName()] = ctxPluginIF;
+    LOGGER_DBG("PluginSocket::registIF, pluginName=%s",ctxPluginIF->mDestnation.c_str());
+    ctxPluginSocket->pluginIFList[ctxPluginIF->mDestnation] = ctxPluginIF;
 
     delete ctxMsg;
 
@@ -68,12 +70,12 @@ t_int PluginSocket::sendMessageToClient(void *msg, void *data)
     {
         LOGGER_DBG("<<<SEND_msg=%s",ctxMsg->dataListString[0].c_str());
         write(itClientFd->second,ctxMsg->dataListString[0].c_str() ,SOCKET_MSG_LENGTH);
-        delete msg;
+        delete ctxMsg;
     }
     else
     {
         LOGGER_DBG("invalid message,have no receiver<fd>");
-        delete msg;
+        delete ctxMsg;
     }
     return E_OPERATION_ERROR_NONE;
 }

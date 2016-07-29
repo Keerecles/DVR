@@ -1,169 +1,178 @@
-
-
-
+#include "fsm.h"
+#include "engine.h"
 /*const FSM::func FSM::FSMAPI[] = {
-    &FSM::modeChangeDailyToEmergency()，
-    &FSM::modeChangeDailyToCapture()，
-    &FSM::modeChangeDailyToRecord()，
-    &FSM::modeChangeDailyToRemote()，
-    &FSM::modeChangeRemoteToEmergency()，
-    &FSM::modeChangeRemoteToCapture()，
-    &FSM::modeChangeRemoteToRecord()，
-    &FSM::modeChangeRemoteToDaily()，
-    &FSM::modeChangeRecordToEmergency()，
-    &FSM::modeChangeRecordToCapture()，
-    &FSM::modeChangeRecordToDaily()，
-    &FSM::modeChangeCaptureToEmergency()，
-    &FSM::modeChangeCaptureToRecord()，
-    &FSM::modeChangeCaptureToDaily()，
+    &FSM::modeChangeDailyToEmergency(),
+    &FSM::modeChangeDailyToCapture(),
+    &FSM::modeChangeDailyToRecord(),
+    &FSM::modeChangeDailyToRemote(),
+    &FSM::modeChangeRemoteToEmergency(),
+    &FSM::modeChangeRemoteToCapture(),
+    &FSM::modeChangeRemoteToRecord(),
+    &FSM::modeChangeRemoteToDaily(),
+    &FSM::modeChangeRecordToEmergency(),
+    &FSM::modeChangeRecordToCapture(),
+    &FSM::modeChangeRecordToDaily(),
+    &FSM::modeChangeCaptureToEmergency(),
+    &FSM::modeChangeCaptureToRecord(),
+    &FSM::modeChangeCaptureToDaily(),
 };*/
 
 const FSM::func FSM::FSMAPI[] = {
-    &FSM::trigger，
+    &FSM::trigger,
 };
 
-
-void FSM::trigger(EVENT_CODE event)
+t_int FSM::trigger(void *msg, void *data)
 {
+    if( NULL== msg ||  NULL== data)
+    {
+        return E_OPERATION_ERROR_PARA;
+    }
+
+    EVENT_CODE event;
+    event = PIPELINE_SWITCH_MODE_DAILY;
+    
+    Message *ctxMsg = static_cast<Message *>(msg);
+    delete ctxMsg;
+
     // Find the transition with the current state and given event.
-    list<Transition>::iterator i;
+    std::list<Transition>::iterator i;
     for (i = mTransitionList.begin(); i != mTransitionList.end(); ++i){
-        if (i.modeFrom == mCurrentWorkMode && i.event == event){
-            mCurrentWorkMode = i.modeTo;
-            i.onTransition();
-            return NULL;
+        if (i->modeFrom == mCurrentWorkMode && i->event == event){
+            mCurrentWorkMode = i->modeTo;
+            i->onTransition();
+            return E_OPERATION_ERROR_NONE;
         }
     }
 }
 
 /*FSM Transition call back function*/
-static void FSM::modeChangeDailyToEmergency()
+void FSM::modeChangeDailyToEmergency()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_EMERGENCY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
 
-static void FSM::modeChangeDailyToCapture()
+void FSM::modeChangeDailyToCapture()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_CAPTURE;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
 
-static void FSM::modeChangeDailyToRecord()
+void FSM::modeChangeDailyToRecord()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_RECORD;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
 
-static void FSM::modeChangeDailyToRemote()
+void FSM::modeChangeDailyToRemote()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_DAILY_TO_REMOTE;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
 
-static void FSM::modeChangeRemoteToEmergency()
+void FSM::modeChangeRemoteToEmergency()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_EMERGENCY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeRemoteToCapture()
+void FSM::modeChangeRemoteToCapture()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_CAPTURE;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeRemoteToRecord()
+void FSM::modeChangeRemoteToRecord()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_RECORD;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeRemoteToDaily()
+void FSM::modeChangeRemoteToDaily()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_REMOTE_TO_DAILY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeRecordToEmergency()
+void FSM::modeChangeRecordToEmergency()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_RECORD_TO_EMERGENCY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeRecordToCapture()
+void FSM::modeChangeRecordToCapture()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_RECORD_TO_CAPRURE;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeRecordToDaily()
+void FSM::modeChangeRecordToDaily()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_DRECORD_TO_DAILY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeCaptureToEmergency()
+void FSM::modeChangeCaptureToEmergency()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_CAPTURE_TO_EMERGENCY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeCaptureToRecord()
+void FSM::modeChangeCaptureToRecord()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_CAPTURE_TO_RECORD;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }
-static void FSM::modeChangeCaptureToDaily()
+void FSM::modeChangeCaptureToDaily()
 {
     Message *ctxMsg = new Message();
-    ctxMsg->origin = mClassName;
+    ctxMsg->origin = mInstance->getClassName();
     ctxMsg->destination = "VideoMonitor";
     ctxMsg->opertation_id = PIPELINE_WORKMODE_CAPTURE_TO_DAILY;
-    sendMessage(ctxMsg，mInstance);
-    return NULL;
+    mInstance->sendMessage(ctxMsg,mInstance);
+    return ;
 }

@@ -1,6 +1,5 @@
-#include "fsm/include/fsm.h"
-#include "core/include/engine.h"
-
+#include "fsm.h"
+#include "engine.h"
 FSM *FSM::mInstance = NULL;
 
 //--------------------------------------------------------------------------

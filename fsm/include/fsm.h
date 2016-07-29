@@ -10,12 +10,14 @@
 #include <string>
 #include <list>
 //#include <sstrseam>
+#include "dataType.h"
 #include "commonType.h"
 
-#include "cJSON.h"
-#include "threadManager.h"
+// #include "cJSON.h"
+//#include "threadManager.h"
 #include "message.h"
-#include "engine.h"
+#include "base.h"
+#include "log.h"
 class Engine;
 
 typedef struct _Transition

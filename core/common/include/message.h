@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 #include "commonType.h"
-
+typedef int t_int;
+typedef unsigned int t_uint;
 class Message {
-    
 public:
     // default constructor
     Message()

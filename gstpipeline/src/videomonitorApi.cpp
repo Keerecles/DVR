@@ -1,15 +1,5 @@
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <pthread.h>
-
-#include <gst/gst.h>
-#include <gst/video/video.h>
-#include <gst/app/gstappsink.h>
-//#include <gst/interfaces/xoverlay.h>
-#include <gst/video/video.h>
 #include "videomonitor.h"
-#include "message.h"
+#include "engine.h"
 
 const VideoMonitor::func VideoMonitor::videoMonitorAPI[] = {
   &VideoMonitor::modeChangeDailyToEmergency,

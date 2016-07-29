@@ -1,6 +1,5 @@
 #include "fsm.h"
-
-
+#include "engine.h"
 /*const FSM::func FSM::FSMAPI[] = {
     &FSM::modeChangeDailyToEmergency(),
     &FSM::modeChangeDailyToCapture(),

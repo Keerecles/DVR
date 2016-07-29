@@ -112,6 +112,7 @@ void Engine::handleMsg(void * msg,void *data)
             pthread_cond_signal(ctx->getCondPtr());
             //unlock
             pthread_mutex_unlock(ctx->getMutexPtr());
+            LOGGER_DBG("add msg to module<%s>",ctx->getClassName().c_str());
         }
         else
         {

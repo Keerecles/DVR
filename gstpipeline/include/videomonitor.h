@@ -10,12 +10,22 @@
 #include <string>
 #include <list>
 //#include <sstrseam>
+#include "base.h"
+#include "dataType.h"
 #include "commonType.h"
-
-#include "cJSON.h"
-#include "threadManager.h"
 #include "message.h"
-#include "engine.h"
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pthread.h>
+
+#include <gst/gst.h>
+#include <gst/video/video.h>
+#include <gst/app/gstappsink.h>
+//#include <gst/interfaces/xoverlay.h>
+#include <gst/video/video.h>
+
 class Engine;
 
 class VideoMonitor : public Base

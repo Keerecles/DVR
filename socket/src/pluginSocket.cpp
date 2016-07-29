@@ -1,7 +1,7 @@
 #include "pluginSocket.h"
 #include "engine.h"
 PluginSocket *PluginSocket::mInstance = NULL;
-PluginSocket::PluginSocket():Base("pluginSocket")
+PluginSocket::PluginSocket():Base("PluginSocket")
 {
     PluginSocket::mInstance = this;
     mutexFdList  = PTHREAD_MUTEX_INITIALIZER;
@@ -58,7 +58,7 @@ int PluginSocket::InitSocket()
 {
     int ret;
     struct sockaddr_un srvAddr;
-    
+
     LOGGER_DBG("PluginSocket::InitSocket start");
     listenFd=socket(PF_UNIX,SOCK_STREAM,0);
     if(listenFd<0)
@@ -165,7 +165,7 @@ void * PluginSocket::threadRecvMsg(void *arg)
                 else
                 {
                     //normal messages
-                    std::map<std::string, Base*>::iterator it_pif;
+                    std::map<std::string, PluginIF*>::iterator it_pif;
                     std::string destination = cJSON_GetObjectItem(root,MSG_KEY_DESTINATION)->valuestring;
                     it_pif = ctxPluginSocket->pluginIFList.find(destination);
                     if(it_pif == ctxPluginSocket->pluginIFList.end())
@@ -182,6 +182,7 @@ void * PluginSocket::threadRecvMsg(void *arg)
                     LOGGER_DBG("add msg to list of <engine>");
                     ctxPluginSocket->sendMessage(ctxMsg,ctxPluginSocket);
                 }
+                cJSON_Delete(root);
             }
         }
     }
@@ -198,7 +199,10 @@ void PluginSocket::handleMsg(void *msg,void *data)
         LOGGER_ERR("Invalid message,msg or data is NULL");
         return;
     }
+    LOGGER_DBG("PluginSocket::handleMsg");
     Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("PluginSocket::handleMsg");
+//    LOGGER_DBG("msg=%s",ctxMsg->dataListString[0].c_str());
     if(E_SOCKET_FUNCTION_MAX_NUMBER <= ctxMsg->opertation_id)
     {
         LOGGER_ERR("Invalid message,have no opertation");

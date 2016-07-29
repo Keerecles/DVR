@@ -7,6 +7,22 @@
 #include "base.h"
 #include "commonType.h"
 #include "log.h"
+typedef int t_int;
+typedef unsigned int t_uint;
+enum THREAD_NUM {
+    E_THREAD_NUM_1,
+    E_THREAD_NUM_2,
+    E_THREAD_NUM_3,
+    E_THREAD_NUM_4,
+    E_THREAD_NUM_MAX,
+};
+class ThreadData
+{
+public:
+    t_int thread_num;
+    pthread_t id[E_THREAD_NUM_MAX];
+    void *ctx;
+};
 class ThreadManager : public Base
 {
     
@@ -34,5 +50,4 @@ private:
     //thread container for managing threads, key is thread name
     std::map<std::string , void *> mThreadList;
 };
-
 #endif // __THREAD_MANAGER_H__

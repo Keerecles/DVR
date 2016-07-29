@@ -1,14 +1,17 @@
 #!/bin/sh
 
 CXXFLAGS="-I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/gstreamer-1.0  
-          -I./engine/include -I./fsm/include -I./gstpipeline/include -I./socket/include 
-          -I./engine/src -I./fsm/src -I./gstpipeline/src -I./socket/src "
-SOURCECODE="engine/src/base.cpp engine/src/engine.cpp engine/src/log.cpp 
-            engine/src/threadManager.cpp engine/src/main.cpp
+          -I./core/engine/include -I./core/threadManager/include -I./core/common/include 
+          -I./fsm/include -I./gstpipeline/include -I./socket/include -I./common/include"
+SOURCECODE="core/common/src/base.cpp core/common/src/cJSON.c core/common/src/log.cpp 
+			core/engine/src/engine.cpp 
+            core/threadManager/src/threadManager.cpp 
+            main.cpp
             fsm/src/fsm.cpp fsm/src/fsmApi.cpp
             gstpipeline/src/videomonitor.cpp gstpipeline/src/videomonitorApi.cpp
             socket/src/pluginSocket.cpp socket/src/pluginSocketApi.cpp
-            engine/src/cJSON.c"
+            "
+            
 OUTPUT_BIN="DVR"
 
 CXXLIBS="-L/usr/lib/x86_64-linux-gnu -Wl,--no-as-needed -lpthread -Wl,--no-as-needed -lglib-2.0 -Wl,--no-as-needed -lgstreamer-1.0 -Wl,-lm,-lgobject-2.0"

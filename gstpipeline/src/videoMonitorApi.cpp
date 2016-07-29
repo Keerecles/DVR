@@ -115,7 +115,7 @@ void VideoMonitor::createOriginPipeline(){
 	}
 	LOGGER_DBG("VideoMonitor::createOriginPipeline Elements have been created");
 	/* Configure elements */
-	// g_object_set (mVideoSrc, "device", "/dev/video1", NULL);
+ //   g_object_set (mVideoSrc, "device", "/dev/video1", NULL);
  //  	g_object_set (mDailyMonitorSink, "location", "/mnt/sdcard/DVRDATA/DAILY/", NULL);
  //  	g_object_set (mEmergencySink, "location", "/mnt/sdcard/DVRDATA/EMERGENCY/", NULL);
  //  	g_object_set (mHIMSink, "width",1280,"height",720, NULL);
@@ -125,33 +125,35 @@ void VideoMonitor::createOriginPipeline(){
  //  	g_object_set (mUdpCloudSink, "host", "127.0.0.1", "port", 8004, NULL);	
 
   	/* Link all elements that can be automatically linked because they have "Always" pads */
-  	gst_bin_add_many (GST_BIN (mPipeline),mVideoSrc
-										,mTee
-										,mQueue1,mQueue2,mQueue3,mQueue4,mQueue5,mQueue6,mQueue7
+  	gst_bin_add_many(GST_BIN (mPipeline),mVideoSrc
+                    ,mTee
+		    						,mQueue1,mQueue2,mQueue3,mQueue4,mQueue5,mQueue6,mQueue7
 										,mDailyMonitorSink
 										,mEmergencySink
-										,mHIMSink
-										,mVideoSegRecordSink
-										,mSnapshootSink,mPicFormat
+			 							,mHIMSink
+			 							,mVideoSegRecordSink
+										,mSnapshootSink
 										,mUdpPhoneSink
 										,mUdpCloudSink
-										,NULL);
+			 							,NULL);
 	
 	/* Link all elements that can be automatically linked because they have "Always" pads */
   	
-    if (gst_element_link_many (mVideoSrc, mTee, NULL) != TRUE ||
-      	gst_element_link_many (mQueue1, mDailyMonitorSink, NULL) != TRUE ||
-      	gst_element_link_many (mQueue2, mEmergencySink, NULL) != TRUE ||
-      	gst_element_link_many (mQueue3, mHIMSink, NULL) != TRUE ||
-      	gst_element_link_many (mQueue4, mVideoSegRecordSink, NULL) != TRUE ||
-      	gst_element_link_many (mQueue5, mPicFormat, mSnapshootSink, NULL) != TRUE ||
-      	gst_element_link_many (mQueue6, mUdpPhoneSink, NULL) != TRUE ||
-      	gst_element_link_many (mQueue7, mUdpCloudSink, NULL) != TRUE) {
-    
+    if( gst_element_link_many (mVideoSrc, mTee, NULL) != TRUE ||
+        gst_element_link_many (mQueue1, mDailyMonitorSink, NULL) != TRUE ||
+        gst_element_link_many (mQueue2, mEmergencySink, NULL) != TRUE ||
+        gst_element_link_many (mQueue3, mHIMSink, NULL) != TRUE ||
+        gst_element_link_many (mQueue4, mVideoSegRecordSink, NULL) != TRUE ||
+        gst_element_link_many (mQueue5, mSnapshootSink, NULL) != TRUE ||
+        gst_element_link_many (mQueue6, mUdpPhoneSink, NULL) != TRUE ||
+        gst_element_link_many (mQueue7, mUdpCloudSink, NULL) != TRUE
+      )
+    {
       	LOGGER_DBG ("Elements could not be linked\n");
       	gst_object_unref (mPipeline);
       	return ;
   	}
+
     LOGGER_DBG("VideoMonitor::createOriginPipeline Elements have been linked");
     /*Aquire the "Request" pads */
     tee_src_pad_template = gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS (mTee), "src_%u");     
@@ -177,17 +179,18 @@ void VideoMonitor::createOriginPipeline(){
     mTeePad7 = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
     mQueuePad7 = gst_element_get_static_pad (mQueue7, "sink");
 
-    if (	gst_pad_link (mTeePad1, mQueuePad1) != GST_PAD_LINK_OK ||
+    if(	gst_pad_link (mTeePad1, mQueuePad1) != GST_PAD_LINK_OK ||
 		    gst_pad_link (mTeePad2, mQueuePad2) != GST_PAD_LINK_OK ||
 		    gst_pad_link (mTeePad3, mQueuePad3) != GST_PAD_LINK_OK ||
-		    gst_pad_link (mTeePad4, mQueuePad4) != GST_PAD_LINK_OK ||
+	 	    gst_pad_link (mTeePad4, mQueuePad4) != GST_PAD_LINK_OK ||
 		    gst_pad_link (mTeePad5, mQueuePad5) != GST_PAD_LINK_OK ||
-		    gst_pad_link (mTeePad6, mQueuePad6) != GST_PAD_LINK_OK ||
-		    gst_pad_link (mTeePad7, mQueuePad7) != GST_PAD_LINK_OK   
-    	) {  
-    	LOGGER_DBG ("Tee could not be linked.\n");  
-  		gst_object_unref (mPipeline); 
-  		gst_object_unref (mQueuePad1); 
+  		  gst_pad_link (mTeePad6, mQueuePad6) != GST_PAD_LINK_OK ||
+  		  gst_pad_link (mTeePad7, mQueuePad7) != GST_PAD_LINK_OK   
+     	) 
+  {  
+    LOGGER_DBG ("Tee could not be linked.\n");  
+  	gst_object_unref (mPipeline); 
+		gst_object_unref (mQueuePad1); 
 		gst_object_unref (mQueuePad2); 
 		gst_object_unref (mQueuePad3); 
 		gst_object_unref (mQueuePad4); 
@@ -202,8 +205,7 @@ void VideoMonitor::createOriginPipeline(){
 	gst_object_unref (mQueuePad4); 
 	gst_object_unref (mQueuePad5); 
 	gst_object_unref (mQueuePad6);
-	gst_object_unref (mQueuePad7);   
-	
+	gst_object_unref (mQueuePad7);  
 	return ;
 }
 

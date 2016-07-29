@@ -1,4 +1,4 @@
-#include "videomonitor.h"
+#include "videoMonitor.h"
 #include "engine.h"
 
 const VideoMonitor::func VideoMonitor::videoMonitorAPI[] = {
@@ -18,31 +18,36 @@ const VideoMonitor::func VideoMonitor::videoMonitorAPI[] = {
   &VideoMonitor::modeChangeCaptureToDaily,
 };
 
-void *VideoMonitor::gstMainThread(void *data){
-  	/* init the gstreamer*/
-	gst_init(NULL,NULL);
-	/* Create our own GLib Main Context and make it the default one */
+void *VideoMonitor::gstMainThread(void *data)
+{
+    LOGGER_DBG("VideoMonitor::gstMainThread Start!");
+	  /* Create our own GLib Main Context and make it the default one */
   	mInstance->mContext = g_main_context_new ();
   	g_main_context_push_thread_default(mInstance->mContext);
-
+    /* init the gstreamer*/
+    //gst_init(NULL,NULL);
+    if(!gst_init_check (NULL,NULL,&mInstance->mError)){
+      LOGGER_DBG("VideoMonitor::gstMainThread gst init failed!");
+      return NULL;
+    }
   	/* Create the origin pipeline (Daily Mode) and play it*/
-	mInstance->createOriginPipeline();
-	/* Instruct the bus to emit signals for each received message, and connect to the interesting signals */
-	mInstance->setPipelineBusandSignal();
+	  mInstance->createOriginPipeline();
+	  /* Instruct the bus to emit signals for each received message, and connect to the interesting signals */
+	  //mInstance->setPipelineBusandSignal();
 
-	/*Check if all conditions are met to report GStreamer as initialized.*/
+	  /*Check if all conditions are met to report GStreamer as initialized.*/
   	// gst_x_overlay_set_window_handle  getNativeWindow()
 
 
 
   	/*Play the init pipeline*/
-	gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
+	  gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
 
 
 
 
 	
-	/* Create a GLib Main Loop and set it to run */
+	  /* Create a GLib Main Loop and set it to run */
   	mInstance->mPluginGMainLoop = g_main_loop_new (mInstance->mContext, FALSE);
   	g_main_loop_run (mInstance->mPluginGMainLoop);
   	g_main_loop_unref (mInstance->mPluginGMainLoop);
@@ -57,11 +62,12 @@ void *VideoMonitor::gstMainThread(void *data){
 
 void VideoMonitor::createOriginPipeline(){
 
-	/* Create the empty pipeline */
+	  /* Create the empty pipeline */
+    LOGGER_DBG("VideoMonitor::createOriginPipeline");
 	  mPipeline = gst_pipeline_new ("DVR_WORK_PIPEPLINE");
 
-	/* Create the elements */
-    mVideoSrc = gst_element_factory_make ("videotextsrc", "mVideoSrc");
+	  /* Create the elements */
+    mVideoSrc = gst_element_factory_make ("videotestsrc", "mVideoSrc");
     mTee 	    = gst_element_factory_make ("tee", "Tee");
     mQueue1   = gst_element_factory_make ("queue", "mQueue1");
     mQueue2   = gst_element_factory_make ("queue", "mQueue2");
@@ -72,27 +78,27 @@ void VideoMonitor::createOriginPipeline(){
     mQueue7   = gst_element_factory_make ("queue", "mQueue7");
 
     /*Elements for DailyMonitor Pipeline*/
-  	mDailyMonitorSink = gst_element_factory_make ("fakesink", "mDailyMonitorSink");
+  	mDailyMonitorSink = gst_element_factory_make ("autovideosink", "mDailyMonitorSink");
   	
   	/*Elements for EmergencyMonitor Pipeline*/
-  	mEmergencySink    = gst_element_factory_make ("fakesink", "mEmergencySink");
+  	mEmergencySink    = gst_element_factory_make ("autovideosink", "mEmergencySink");
   	
   	/*Elements for HMI Pipeline*/
-  	mHIMSink = gst_element_factory_make ("fakesink", "mHIMSink");
+  	mHIMSink = gst_element_factory_make ("autovideosink", "mHIMSink");
   	
   	/*Elements for Video Segment record Pipeline*/
-  	mVideoSegRecordSink = gst_element_factory_make ("fakesink", "mVideoSegRecordSink");
+  	mVideoSegRecordSink = gst_element_factory_make ("autovideosink", "mVideoSegRecordSink");
    	
 	/*Elements for SnapShoot Pipeline*/
-   	mSnapshootSink = gst_element_factory_make ("fakesink", "mSnapshootSink");
+   	mSnapshootSink = gst_element_factory_make ("autovideosink", "mSnapshootSink");
   	mPicFormat = gst_element_factory_make ("pngenc", "mPicFormat");
 
 
 	/*Elements for Phone Link Pipeline*/
-  	mUdpPhoneSink = gst_element_factory_make ("fakesink", "mUdpPhoneSink");
+  	mUdpPhoneSink = gst_element_factory_make ("autovideosink", "mUdpPhoneSink");
   	
 	/*Elements for Cloud Pipeline*/
-  	mUdpCloudSink = gst_element_factory_make ("fakesink", "mUdpCloudSink");
+  	mUdpCloudSink = gst_element_factory_make ("autovideosink", "mUdpCloudSink");
   	
 	if (!mPipeline || !mVideoSrc || !mTee
 		|| !mQueue1 || !mQueue2 || !mQueue3 || !mQueue4 || !mQueue5 || !mQueue6 || !mQueue7
@@ -103,12 +109,11 @@ void VideoMonitor::createOriginPipeline(){
 		|| !mSnapshootSink || !mPicFormat
 		|| !mUdpPhoneSink
 		|| !mUdpCloudSink) { 
-	  
-	  g_printerr ("Elements could not be created\n");
-      gst_object_unref (mPipeline);
+    LOGGER_DBG("VideoMonitor::createOriginPipeline Elements could not be created");
+    gst_object_unref (mPipeline);
 	  return ;
 	}
-	
+	LOGGER_DBG("VideoMonitor::createOriginPipeline Elements have been created");
 	/* Configure elements */
 	// g_object_set (mVideoSrc, "device", "/dev/video1", NULL);
  //  	g_object_set (mDailyMonitorSink, "location", "/mnt/sdcard/DVRDATA/DAILY/", NULL);
@@ -133,7 +138,8 @@ void VideoMonitor::createOriginPipeline(){
 										,NULL);
 	
 	/* Link all elements that can be automatically linked because they have "Always" pads */
-  	if (gst_element_link_many (mVideoSrc, mTee, NULL) != TRUE ||
+  	
+    if (gst_element_link_many (mVideoSrc, mTee, NULL) != TRUE ||
       	gst_element_link_many (mQueue1, mDailyMonitorSink, NULL) != TRUE ||
       	gst_element_link_many (mQueue2, mEmergencySink, NULL) != TRUE ||
       	gst_element_link_many (mQueue3, mHIMSink, NULL) != TRUE ||
@@ -142,16 +148,17 @@ void VideoMonitor::createOriginPipeline(){
       	gst_element_link_many (mQueue6, mUdpPhoneSink, NULL) != TRUE ||
       	gst_element_link_many (mQueue7, mUdpCloudSink, NULL) != TRUE) {
     
-      	g_printerr ("Elements could not be linked\n");
+      	LOGGER_DBG ("Elements could not be linked\n");
       	gst_object_unref (mPipeline);
       	return ;
   	}
-   
+    LOGGER_DBG("VideoMonitor::createOriginPipeline Elements have been linked");
     /*Aquire the "Request" pads */
-    tee_src_pad_template = gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS (mTee), "src%d");      
+    tee_src_pad_template = gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS (mTee), "src_%u");     
+
     mTeePad1 = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
     mQueuePad1 = gst_element_get_static_pad (mQueue1, "sink");
-     
+
     mTeePad2 = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
     mQueuePad2 = gst_element_get_static_pad (mQueue2, "sink");
 
@@ -178,7 +185,7 @@ void VideoMonitor::createOriginPipeline(){
 		    gst_pad_link (mTeePad6, mQueuePad6) != GST_PAD_LINK_OK ||
 		    gst_pad_link (mTeePad7, mQueuePad7) != GST_PAD_LINK_OK   
     	) {  
-    	g_printerr ("Tee could not be linked.\n");  
+    	LOGGER_DBG ("Tee could not be linked.\n");  
   		gst_object_unref (mPipeline); 
   		gst_object_unref (mQueuePad1); 
 		gst_object_unref (mQueuePad2); 

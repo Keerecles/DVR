@@ -63,11 +63,20 @@ void Engine::createModeObject(void *data)
 {
     //add mode at here
     //use threadManager,launch thread of every module,handle msg
-    PluginSocket *pluginSocket = PluginSocket::getInstance();
-    pluginSocket->Init(data);
     ThreadManager *ctxTM = ThreadManager::getInstance();
-    ctxTM->startThread(pluginSocket->Run, (void *)pluginSocket );
+    
     //load other modules at here
+   /* PluginSocket *pluginSocket = PluginSocket::getInstance();
+    pluginSocket->Init(data);
+    ctxTM->startThread(pluginSocket->Run, (void *)pluginSocket );*/
+    VideoMonitor *videoMonitor = VideoMonitor::getInstance();
+    videoMonitor->Init(data);
+    ctxTM->startThread(videoMonitor->Run, (void *)videoMonitor );
+
+/*    FSM *fsm = FSM::getInstance();
+    fsm->Init(data);
+    ctxTM->startThread(fsm->Run, (void *)fsm );  */  
+
 }
 void Engine::handleMsg(void * msg,void *data)
 {

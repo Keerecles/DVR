@@ -1,4 +1,4 @@
-#include "videomonitor.h"
+#include "videoMonitor.h"
 #include "engine.h"
 
 VideoMonitor *VideoMonitor::mInstance = NULL;
@@ -33,16 +33,18 @@ VideoMonitor *VideoMonitor::getInstance()
 
 void VideoMonitor::Init(void *data)
 {
+    LOGGER_DBG("VideoMonitor::Init");
     ctxEngine = static_cast<Engine*>(data);
 }
 
 void * VideoMonitor::Run(void *arg)
 {	
-	/* Start the Gst main thread*/
-	mInstance->startNewThread(gstMainThread,mInstance->ctxEngine);
+	LOGGER_DBG("VideoMonitor::Run");
+    /* Start the Gst main thread*/
+    LOGGER_DBG("VideoMonitor::Start the thread gstMainThread");
+	mInstance->startNewThread(gstMainThread,mInstance);
 
 	void *psMessage = NULL;
-    LOGGER_DBG("VideoMonitor::Run");
     VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(arg);
 
     while(1)
@@ -87,7 +89,8 @@ void VideoMonitor::handleMsg(void *msg,void *data)
 void VideoMonitor::startNewThread(void *(threadFunc)(void *),void *data)
 {	
     if(threadFunc==NULL||data==NULL)
-    {
+    {   
+        LOGGER_DBG("VideoMonitor::startNewThread threadFunc or data is NULL");
         return;
     }
     VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(data);
@@ -104,6 +107,7 @@ void VideoMonitor::sendMessage(void *msg,void *data){
     
     if(msg==NULL||data==NULL)
     {
+        LOGGER_DBG("VideoMonitor::sendMessage threadFunc or data is NULL");
         return;
     }
     VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(data);

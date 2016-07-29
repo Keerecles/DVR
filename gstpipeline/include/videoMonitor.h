@@ -87,6 +87,7 @@ private:
     GstElement *mPipeline, *mVideoSrc;
     GstElement *mTee;
     GstElement *mQueue1,*mQueue2,*mQueue3,*mQueue4,*mQueue5,*mQueue6,*mQueue7;
+    GstElement *mTextOverlay1,*mTextOverlay2,*mTextOverlay3,*mTextOverlay4,*mTextOverlay5,*mTextOverlay6,*mTextOverlay7;
     GstElement *mDailyMonitorSink;
     GstElement *mEmergencySink;
     GstElement *mHIMSink;

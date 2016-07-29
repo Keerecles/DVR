@@ -4,6 +4,8 @@
 #include "commonType.h"
 #include "base.h"
 #include "pluginSocket.h"
+#include "videoMonitor.h"
+#include "fsm.h"
 #include "cJSON.h"
 #include "log.h"
 typedef int t_int;

@@ -71,13 +71,15 @@ void *VideoMonitor::gstMainThread(void *data)
     LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
   
     gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-    // //gst_object_ref(mInstance->mBinPad2);
+    //gst_object_ref(mInstance->mBinPad2);
+    gst_element_set_state (mInstance->mBin2, GST_STATE_NULL);
     if(!gst_pad_unlink (mInstance->mTeePad2,mInstance->mBinPad2)){
       LOGGER_DBG("VideoMonitor::gstMainThread mBinPad2 failed to unlink!");
     }
     if(!gst_bin_remove (GST_BIN(mInstance->mPipeline),mInstance->mBin2)){
       LOGGER_DBG("VideoMonitor::gstMainThread mBinPad2 failed to remove!");
     }
+
     gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);
     gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
     LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");

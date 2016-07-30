@@ -63,29 +63,25 @@ void *VideoMonitor::gstMainThread(void *data)
     gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
     LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
 
+
+
+
+
     sleep(1);
     LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
   
     gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-    //gst_object_ref(mInstance->mBinPad2);
+    // //gst_object_ref(mInstance->mBinPad2);
     if(!gst_pad_unlink (mInstance->mTeePad2,mInstance->mBinPad2)){
       LOGGER_DBG("VideoMonitor::gstMainThread mBinPad2 failed to unlink!");
     }
-    gst_element_release_request_pad(mInstance->mTee,mTeePad2);
-    //gst_object_unref(mInstance->mTee);
-
-    if(!gst_bin_remove (mInstance->mPipeline,mInstance->mBinPad2)){
+    if(!gst_bin_remove (GST_BIN(mInstance->mPipeline),mInstance->mBin2)){
       LOGGER_DBG("VideoMonitor::gstMainThread mBinPad2 failed to remove!");
     }
-    gst_object_unref(mInstance->mBinPad2);
-    // gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-    // gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);
-  
-    // gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
+    gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);
+    gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
     LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
 
-sleep(3);
-LOGGER_DBG("VideoMonitor::gstMainThread hehe!");
 
    //  usleep(10000);
    //  gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);

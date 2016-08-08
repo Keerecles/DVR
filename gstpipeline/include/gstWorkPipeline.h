@@ -20,7 +20,7 @@ public:
     GstElement *mTextOverlay1,*mTextOverlay2,*mTextOverlay3,*mTextOverlay4,*mTextOverlay5,*mTextOverlay6,*mTextOverlay7;
     GstElement *mDailyMonitorSink;
     GstElement *mEmergencySink;
-    GstElement *mHIMSink;
+    GstElement *mHMISink;
     GstElement *mVideoSegRecordSink;
     GstElement *mSnapshootSink,*mPicFormat;
     GstElement *mUdpPhoneSink;

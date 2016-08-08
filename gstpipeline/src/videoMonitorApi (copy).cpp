@@ -42,54 +42,11 @@ void *VideoMonitor::gstMainThread(void *data)
 
   	/*Play the init pipeline*/
     gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
-    sleep(1);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
-    if(!gst_bin_add(GST_BIN (mInstance->mPipeline), mInstance->mBin2)){
-      LOGGER_DBG("VideoMonitor::gstMainThread mBin2 failed to add!");
-    }
-    gst_pad_link (mInstance->mTeePad2,mInstance->mBinPad2);
-    gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-    
-    gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
-
-    sleep(1);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
-    if(!gst_bin_add(GST_BIN (mInstance->mPipeline), mInstance->mBin3)){
-      LOGGER_DBG("VideoMonitor::gstMainThread mBin2 failed to add!");
-    }
-    gst_pad_link (mInstance->mTeePad3,mInstance->mBinPad3);
-    gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-    gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
-
-
-
-
-
-    sleep(1);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
-  
-    gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-    //gst_object_ref(mInstance->mBinPad2);
-    gst_element_set_state (mInstance->mBin2, GST_STATE_NULL);
-    if(!gst_pad_unlink (mInstance->mTeePad2,mInstance->mBinPad2)){
-      LOGGER_DBG("VideoMonitor::gstMainThread mBinPad2 failed to unlink!");
-    }
-    if(!gst_bin_remove (GST_BIN(mInstance->mPipeline),mInstance->mBin2)){
-      LOGGER_DBG("VideoMonitor::gstMainThread mBinPad2 failed to remove!");
-    }
-
+    usleep(10000);
     gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);
-    gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
-
-
-   //  usleep(10000);
-   //  gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);
-   //  gst_pad_unlink (mInstance->mTeePad1,mInstance->mBinPad1);
-   //  //gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
-	  // gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
+    gst_pad_unlink (mInstance->mTeePad1,mInstance->mBinPad1);
+    //gst_element_set_state (mInstance->mPipeline, GST_STATE_READY);
+	  gst_element_set_state (mInstance->mPipeline, GST_STATE_PLAYING);
     // sleep(1);
     // gst_element_set_state (mInstance->mPipeline, GST_STATE_PAUSED);
     // gst_pad_unlink (mInstance->mTeePad1,mInstance->mBinPad1);
@@ -228,8 +185,8 @@ void VideoMonitor::createOriginPipeline(){
     gst_bin_add_many(GST_BIN (mBin7), mQueue7, mTextOverlay7, mUdpCloudSink, NULL);
 
     gst_bin_add_many(GST_BIN (mPipeline), mVideoSrc, mTee ,NULL);
-    gst_bin_add(GST_BIN (mPipeline), mBin1);
-    // gst_bin_add_many(GST_BIN (mPipeline), mBin2, NULL);
+    gst_bin_add_many(GST_BIN (mPipeline), mBin1, NULL);
+    gst_bin_add_many(GST_BIN (mPipeline), mBin2, NULL);
     // gst_bin_add_many(GST_BIN (mPipeline), mBin3, NULL);
     // gst_bin_add_many(GST_BIN (mPipeline), mBin4, NULL);
     // gst_bin_add_many(GST_BIN (mPipeline), mBin5, NULL);
@@ -261,15 +218,15 @@ void VideoMonitor::createOriginPipeline(){
 
     mTeePad1    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
     mTeePad2    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
-    mTeePad3    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
-    mTeePad4    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
-    mTeePad5    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
-    mTeePad6    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
-    mTeePad7    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
-    if(!mTeePad1 || !mTeePad2 || !mTeePad3 || !mTeePad4 || !mTeePad5 || !mTeePad6 || !mTeePad7 ){
-        LOGGER_DBG(" mTeePad could not be created");
-        return ;
-    }
+    // mTeePad3    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
+    // mTeePad4    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
+    // mTeePad5    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
+    // mTeePad6    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
+    // mTeePad7    = gst_element_request_pad (mTee, tee_src_pad_template, NULL, NULL);
+    // if(!mTeePad1 || !mTeePad2 || !mTeePad3 || !mTeePad4 || !mTeePad5 || !mTeePad6 || !mTeePad7 ){
+    //     LOGGER_DBG(" mTeePad could not be created");
+    //     return ;
+    // }
 // mFakeSinkPad   = gst_element_get_static_pad (mFakeSink, "sink");
     mQueuePad1  = gst_element_get_static_pad (mQueue1, "sink");
     mQueuePad2  = gst_element_get_static_pad (mQueue2, "sink");
@@ -304,10 +261,10 @@ void VideoMonitor::createOriginPipeline(){
     gst_element_add_pad (mBin7,mBinPad7);
 
     /*Link the tee and bins*/
-    if(	gst_pad_link (mTeePad1, mBinPad1) != GST_PAD_LINK_OK 
-		    // gst_pad_link (mTeePad2, mBinPad2) != GST_PAD_LINK_OK 
+    if(	gst_pad_link (mTeePad1, mBinPad1) != GST_PAD_LINK_OK ||
+		    gst_pad_link (mTeePad2, mBinPad2) != GST_PAD_LINK_OK 
 		    // gst_pad_link (mTeePad3, mBinPad3) != GST_PAD_LINK_OK ||
-	 	    // gst_pad_link (mTeePad4, mBinPad4) != GST_PAD_LINK_OK ||
+	 	   //  gst_pad_link (mTeePad4, mBinPad4) != GST_PAD_LINK_OK ||
 		    // gst_pad_link (mTeePad5, mBinPad5) != GST_PAD_LINK_OK ||
   		  // gst_pad_link (mTeePad6, mBinPad6) != GST_PAD_LINK_OK ||
   		  // // gst_pad_link (mTeePad6, mFakeSinkPad) != GST_PAD_LINK_OK ||
@@ -333,7 +290,6 @@ void VideoMonitor::createOriginPipeline(){
     gst_object_unref (mQueuePad5); 
     gst_object_unref (mQueuePad6);
     gst_object_unref (mQueuePad7);
-    LOGGER_DBG("VideoMonitor::createOriginPipeline end!");
 	return ;
 }
 

@@ -8,7 +8,7 @@ SOURCECODE="core/common/src/base.cpp core/common/src/cJSON.c core/common/src/log
             core/threadManager/src/threadManager.cpp 
             main.cpp
             fsm/src/fsm.cpp fsm/src/fsmApi.cpp
-            gstpipeline/src/videoMonitor.cpp gstpipeline/src/videoMonitorApi.cpp
+            gstpipeline/src/videoMonitor.cpp gstpipeline/src/videoMonitorApi.cpp gstpipeline/src/gstWorkPipeline.cpp
             socket/src/pluginSocket.cpp socket/src/pluginSocketApi.cpp
             "
             

@@ -40,52 +40,45 @@ void *VideoMonitor::gstMainThread(void *data)
 	  /*Check if all conditions are met to report GStreamer as initialized.*/
   	// gst_x_overlay_set_window_handle  getNativeWindow()
 
-
-
+    void *psMessage = NULL;
   	/*Play the init pipeline*/
     gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
     
+    
+
+    sleep(3);
+    mInstance->modeChangeDailyToCapture(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeCaptureToDaily(psMessage, psMessage);
+    
+    sleep(3);
+    mInstance->modeChangeDailyToRecord(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeRecordToDaily(psMessage, psMessage);
+
+    sleep(3);
+    mInstance->modeChangeDailyToRemote(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeRemoteToDaily(psMessage, psMessage);
+
+    sleep(3);
+    mInstance->modeChangeDailyToCapture(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeCaptureToRecord(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeRecordToCapture(psMessage, psMessage);
+
+    sleep(3);
+    mInstance->modeChangeDailyToRemote(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeRemoteToCapture(psMessage, psMessage);
     sleep(1);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
-    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin2))
-    {
-      LOGGER_DBG("VideoMonitor::gstMainThread mGstPipeline.mBin2 failed to add!");
-    }
-    gst_pad_link (mInstance->mGstPipeline.mTeePad2,mInstance->mGstPipeline.mBinPad2);
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
-
+    mInstance->modeChangeCaptureToDaily(psMessage, psMessage);
     sleep(1);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
-    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin3))
-    {
-      LOGGER_DBG("VideoMonitor::gstMainThread mGstPipeline.mBin2 failed to add!");
-    }
-    gst_pad_link (mInstance->mGstPipeline.mTeePad3,mInstance->mGstPipeline.mBinPad3);
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
+    mInstance->modeChangeDailyToRemote(psMessage, psMessage);
+    sleep(3);
+    mInstance->modeChangeRemoteToRecord(psMessage, psMessage);
 
-
-    sleep(1);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE!");
-  
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
-    //gst_object_ref(mInstance->mGstPipeline.mBinPad2);
-    gst_element_set_state (mInstance->mGstPipeline.mBin2, GST_STATE_NULL);
-    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad2,mInstance->mGstPipeline.mBinPad2))
-    {
-      LOGGER_DBG("VideoMonitor::gstMainThread mGstPipeline.mBinPad2 failed to unlink!");
-    }
-    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin2))
-    {
-      LOGGER_DBG("VideoMonitor::gstMainThread mGstPipeline.mBinPad2 failed to remove!");
-    }
-
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PAUSED);
-    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
-    LOGGER_DBG("VideoMonitor::gstMainThread CHANCHE THE PIPELINE END!");
 
 
 	  /* Create a GLib Main Loop and set it to run */
@@ -165,14 +158,12 @@ void VideoMonitor::createElements()
   mGstPipeline.mSnapshootSink = gst_element_factory_make (SNAPSHOOT_SINK, "mSnapshootSink");
   mGstPipeline.mPicFormat = gst_element_factory_make (PICENC, "mPicFormat");
 
-
   /*Elements for Phone Link Pipeline*/
   mGstPipeline.mUdpPhoneSink = gst_element_factory_make (UDP_PHONE_SINK, "mUdpPhoneSink");
     
   /*Elements for Cloud Pipeline*/
   mGstPipeline.mUdpCloudSink = gst_element_factory_make (UDP_CLOUD_SINK, "mUdpCloudSink");
 
-  // mFakeSink     = gst_element_factory_make ("fakesink", "mFakeSink");
     
   if (!mGstPipeline.mPipeline || !mGstPipeline.mVideoSrc || !mGstPipeline.mTee
       || !mGstPipeline.mBin1 || !mGstPipeline.mBin2 || !mGstPipeline.mBin3 || !mGstPipeline.mBin4 || !mGstPipeline.mBin5 || !mGstPipeline.mBin6 || !mGstPipeline.mBin7
@@ -413,194 +404,455 @@ void VideoMonitor::finalize()
 /*Function to change the mode of pipeline*/
 t_int VideoMonitor::modeChangeDailyToEmergency(void *msg, void *data)
 {
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency!");
     
-    if(NULL == msg || NULL == data)
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin2))
     {
-        return E_OPERATION_ERROR_PARA;
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency Emergency Bin (mBin2) failed to add!");
     }
-    Message *ctxMsg = static_cast<Message *>(msg);
-    gst_element_set_state (mGstPipeline.mPipeline, GST_STATE_NULL);
+    gst_pad_link (mInstance->mGstPipeline.mTeePad2,mInstance->mGstPipeline.mBinPad2);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
 
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency end!");
 
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
-
-    delete ctxMsg;
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToCapture(void *msg, void *data)
 {
-
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture Capture Bin (mBin5) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
 
-    delete ctxMsg;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToRecord(void *msg, void *data)
 {
-   
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Record Bin (mBin4) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad4);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
 
-    delete ctxMsg;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToRemote(void *msg, void *data)
 {
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToRemote!");
     
-     if(NULL == msg || NULL == data)
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin6))
     {
-        return E_OPERATION_ERROR_PARA;
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToRemote Remote Bin (mBin6) failed to add!");
     }
-    Message *ctxMsg = static_cast<Message *>(msg);
-    
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad6);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
 
-    delete ctxMsg;
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToRemote end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToEmergency(void *msg, void *data)
 {
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency!");
     
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
 
-    delete ctxMsg;
+    /*Stop the Remote Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin6, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad6,mInstance->mGstPipeline.mBinPad6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to remove!");
+    }
+
+    /*Start the Emergency Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin2))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Emergency Bin (mBin2) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad2);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToCapture(void *msg, void *data)
 {
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency!");
     
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
 
-    delete ctxMsg;
+    /*Stop the Remote Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin6, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad6,mInstance->mGstPipeline.mBinPad6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to remove!");
+    }
+
+    /*Start the Capture Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Capture Bin (mBin5) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToRecord(void *msg, void *data)
 {
-   
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
 
-    delete ctxMsg;
+    /*Stop the Remote Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin6, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad6,mInstance->mGstPipeline.mBinPad6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord Remote Bins (mBinPad6) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord Remote Bins (mBinPad6) failed to remove!");
+    }
+
+    /*Start the Capture Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord Video Record Bin (mBin4) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad4);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToDaily(void *msg, void *data)
 {
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord!");
     
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
 
-    delete ctxMsg;
+    /*Stop the Remote Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin6, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad6,mInstance->mGstPipeline.mBinPad6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord Remote Bins (mBinPad6) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin6))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord Remote Bins (mBinPad6) failed to remove!");
+    }
+
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRecordToEmergency(void *msg, void *data)
 {
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency!");
     
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
 
-    delete ctxMsg;
+    /*Stop the Record Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin4, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad4,mInstance->mGstPipeline.mBinPad4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Record Bins (mBinPad4) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Record Bins (mBinPad4) failed to remove!");
+    }
+
+    /*Start the Emergency Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin2))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Emergency Bin (mBin2) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad2);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRecordToCapture(void *msg, void *data)
 {
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeRecordToCapture!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
 
-    delete ctxMsg;
+    /*Stop the Record Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin4, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad4,mInstance->mGstPipeline.mBinPad4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToCapture Record Bins (mBinPad4) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToCapture Record Bins (mBinPad4) failed to remove!");
+    }
+
+    /*Start the Capture Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToCapture Capture Bin (mBin5) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRecordToCapture end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRecordToDaily(void *msg, void *data)
 { 
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeRecordToDaily!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
 
-    delete ctxMsg;
+    /*Stop the Video Record Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin4, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad4,mInstance->mGstPipeline.mBinPad4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToDaily Remote Bins (mBinPad4) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToDaily Remote Bins (mBinPad4) failed to remove!");
+    }
+
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeRecordToDaily end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeCaptureToEmergency(void *msg, void *data)
 {
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeCaptureToEmergency!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
 
-    delete ctxMsg;
+    /*Stop the Capture Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin5, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToEmergency Capture Bins (mBinPad5) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToEmergency Capture Bins (mBinPad5) failed to remove!");
+    }
+
+    /*Start the Emergency Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin2))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToEmergency Emergency Bin (mBin2) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad2);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeCaptureToEmergency end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeCaptureToRecord(void *msg, void *data)
 {    
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeCaptureToRecord!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
 
-    delete ctxMsg;
+    /*Stop the Capture Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin5, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToRecord Capture Bins (mBinPad5) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToRecord Capture Bins (mBinPad5) failed to remove!");
+    }
+
+    /*Start the Record Mode Bin*/
+    if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToRecord Record Bin (mBin4) failed to add!");
+    }
+    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad4);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeCaptureToRecord end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeCaptureToDaily(void *msg, void *data)
 {   
-     if(NULL == msg || NULL == data)
-    {
-        return E_OPERATION_ERROR_PARA;
-    }
-    Message *ctxMsg = static_cast<Message *>(msg);
+    LOGGER_DBG("VideoMonitor::modeChangeCaptureToDaily!");
     
-    LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency");
+    // if(NULL == msg || NULL == data)
+    // {
+    //     return E_OPERATION_ERROR_PARA;
+    // }
+    // Message *ctxMsg = static_cast<Message *>(msg);
+    
 
-    delete ctxMsg;
+    /*Stop the Capture Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mBin5, GST_STATE_NULL);
+
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad4,mInstance->mGstPipeline.mBinPad5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToDaily Capture Bins (mBinPad5) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin5))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeCaptureToDaily Capture Bins (mBinPad5) failed to remove!");
+    }
+
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+
+    LOGGER_DBG("VideoMonitor::modeChangeCaptureToDaily end!");
+
+    //delete ctxMsg;
     return E_OPERATION_ERROR_NONE;
 }

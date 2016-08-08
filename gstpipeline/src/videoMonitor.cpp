@@ -46,7 +46,6 @@ void * VideoMonitor::Run(void *arg)
 
 	void *psMessage = NULL;
     VideoMonitor *ctxVideoMonitor = static_cast<VideoMonitor *>(arg);
-
     while(1)
     {
         //waiting..............

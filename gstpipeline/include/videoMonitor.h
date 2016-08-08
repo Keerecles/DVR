@@ -1,6 +1,18 @@
 #ifndef VIDEOMONITOR_H
 #define VIDEOMONITOR_H
 
+#define PIPELINE_NAME               "DVR_WORK_PIPEPLINE"
+#define VIDEO_SOURCE                "videotestsrc"
+#define DAILY_MONITOR_SINK          "autovideosink"
+#define EMERGENCY_SINK              "autovideosink"
+#define HMI_SINK                    "autovideosink"
+#define VIDEO_SEGRECORD_SINK        "autovideosink"
+    
+#define SNAPSHOOT_SINK              "autovideosink"
+#define PICENC                      "pngenc"
+#define UDP_PHONE_SINK              "autovideosink"
+#define UDP_CLOUD_SINK              "autovideosink"
+
 #include <map>
 #include <iostream>
 #include <unistd.h>
@@ -38,7 +50,13 @@ public:
 private:
     static void * gstMainThread(void *data);  //the main gst loop
     void    getNativeWindow();                //Get the native window from qml                               
+    
     void    createOriginPipeline();           //Create the pipeline when the vehicle launch
+    void    createElements();
+    void    configureElements();
+    void    createBins();                     //Every Bin stands for one pipeline on specific work mode
+    void    preDynamicLink();                 //Prepare for dynamic linking
+    void    completePipeline();               //Complete the origin pipeline
 
     static void    pipelineStateChangedCallBack(GstBus *bus, GstMessage *msg);      //Notify UI of the changes of the pipeline state                            
     void    pipelineModeChangedCallBack();                                   //Notify UI of the changes of the pipeline mode

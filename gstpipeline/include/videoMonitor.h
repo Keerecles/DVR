@@ -1,30 +1,22 @@
 #ifndef VIDEOMONITOR_H
 #define VIDEOMONITOR_H
 
-#include <pthread.h>
 #include <map>
 #include <iostream>
-//#include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <string>
 #include <list>
-//#include <sstrseam>
-#include "base.h"
-#include "dataType.h"
-#include "commonType.h"
-#include "message.h"
-
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pthread.h>
 
-#include <gst/gst.h>
-#include <gst/video/video.h>
-#include <gst/app/gstappsink.h>
-//#include <gst/interfaces/xoverlay.h>
-#include <gst/video/video.h>
+#include "base.h"
+#include "dataType.h"
+#include "commonType.h"
+#include "message.h"
+#include "gstWorkPipeline.h"
 
 class Engine;
 
@@ -83,29 +75,7 @@ private:
     uint mNativeWindow;
     uint mCurrentPipelineMode;
     WorkMode mCurrentWorkMode;
-
-    GstElement *mPipeline, *mVideoSrc;
-    GstElement *mTee;
-    GstElement *mBin1,*mBin2,*mBin3,*mBin4,*mBin5,*mBin6,*mBin7;
-    GstElement *mQueue1,*mQueue2,*mQueue3,*mQueue4,*mQueue5,*mQueue6,*mQueue7;
-    GstElement *mTextOverlay1,*mTextOverlay2,*mTextOverlay3,*mTextOverlay4,*mTextOverlay5,*mTextOverlay6,*mTextOverlay7;
-    GstElement *mDailyMonitorSink;
-    GstElement *mEmergencySink;
-    GstElement *mHIMSink;
-    GstElement *mVideoSegRecordSink;
-    GstElement *mSnapshootSink,*mPicFormat;
-    GstElement *mUdpPhoneSink;
-    GstElement *mUdpCloudSink;
-    // GstElement *mFakeSink;
-    
-    GstPadTemplate *tee_src_pad_template;
-    GstPad *mTeePad1,*mTeePad2,*mTeePad3,*mTeePad4,*mTeePad5,*mTeePad6,*mTeePad7;
-    GstPad *mBinPad1,*mBinPad2,*mBinPad3,*mBinPad4,*mBinPad5,*mBinPad6,*mBinPad7;
-    GstPad *mQueuePad1,*mQueuePad2,*mQueuePad3,*mQueuePad4,*mQueuePad5,*mQueuePad6,*mQueuePad7;
-    // GstPad *mFakeSinkPad;
-
-    GstBus* mGstBus;
-    GError*  mError;
+    GstWorkPipeline mGstPipeline;    
 };
 
 #endif // VIDEOMONITOR_H

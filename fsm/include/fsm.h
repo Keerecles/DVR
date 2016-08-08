@@ -4,29 +4,27 @@
 #include <pthread.h>
 #include <map>
 #include <iostream>
-//#include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <string>
 #include <list>
-//#include <sstrseam>
+
 #include "dataType.h"
 #include "commonType.h"
-
-// #include "cJSON.h"
-//#include "threadManager.h"
 #include "message.h"
 #include "base.h"
 #include "log.h"
+
 class Engine;
 
-typedef struct _Transition
+class Transition
 {
-  WorkMode modeFrom;
-  WorkMode modeTo;
-  EVENT_CODE event;
-  void (*onTransition)();
-}Transition;
+public:
+    WorkMode modeFrom;
+    WorkMode modeTo;
+    EVENT_CODE event;
+    void (*onTransition)();
+};
 
 class FSM : public Base
 {

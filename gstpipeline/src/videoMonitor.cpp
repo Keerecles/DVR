@@ -11,6 +11,7 @@ VideoMonitor *VideoMonitor::mInstance = NULL;
 VideoMonitor::VideoMonitor(): Base("VideoMonitor")
 {
 	VideoMonitor::mInstance = this;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
 }
 
 //--------------------------------------------------------------------------

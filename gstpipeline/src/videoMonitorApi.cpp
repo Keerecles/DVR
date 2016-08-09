@@ -423,6 +423,7 @@ t_int VideoMonitor::modeChangeDailyToEmergency(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeDailyToEmergency end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_EMERGENCY;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToCapture(void *msg, void *data)
@@ -446,6 +447,7 @@ t_int VideoMonitor::modeChangeDailyToCapture(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_CAPTURE;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToRecord(void *msg, void *data)
@@ -469,6 +471,7 @@ t_int VideoMonitor::modeChangeDailyToRecord(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_RECORD;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToRemote(void *msg, void *data)
@@ -492,6 +495,7 @@ t_int VideoMonitor::modeChangeDailyToRemote(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeDailyToRemote end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_REMOTE;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToEmergency(void *msg, void *data)
@@ -530,6 +534,7 @@ t_int VideoMonitor::modeChangeRemoteToEmergency(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_EMERGENCY;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToCapture(void *msg, void *data)
@@ -568,6 +573,7 @@ t_int VideoMonitor::modeChangeRemoteToCapture(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_CAPTURE;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToRecord(void *msg, void *data)
@@ -606,6 +612,7 @@ t_int VideoMonitor::modeChangeRemoteToRecord(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_RECORD;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRemoteToDaily(void *msg, void *data)
@@ -638,6 +645,7 @@ t_int VideoMonitor::modeChangeRemoteToDaily(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRemoteToRecord end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRecordToEmergency(void *msg, void *data)
@@ -676,6 +684,7 @@ t_int VideoMonitor::modeChangeRecordToEmergency(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_EMERGENCY;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRecordToCapture(void *msg, void *data)
@@ -714,6 +723,7 @@ t_int VideoMonitor::modeChangeRecordToCapture(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRecordToCapture end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_CAPTURE;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeRecordToDaily(void *msg, void *data)
@@ -746,6 +756,7 @@ t_int VideoMonitor::modeChangeRecordToDaily(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeRecordToDaily end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeCaptureToEmergency(void *msg, void *data)
@@ -784,6 +795,7 @@ t_int VideoMonitor::modeChangeCaptureToEmergency(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeCaptureToEmergency end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_EMERGENCY;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeCaptureToRecord(void *msg, void *data)
@@ -822,6 +834,7 @@ t_int VideoMonitor::modeChangeCaptureToRecord(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeCaptureToRecord end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_RECORD;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeCaptureToDaily(void *msg, void *data)
@@ -854,5 +867,6 @@ t_int VideoMonitor::modeChangeCaptureToDaily(void *msg, void *data)
     LOGGER_DBG("VideoMonitor::modeChangeCaptureToDaily end!");
 
     //delete ctxMsg;
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
     return E_OPERATION_ERROR_NONE;
 }

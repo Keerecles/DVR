@@ -2,15 +2,15 @@
 #define VIDEOMONITOR_H
 
 #define PIPELINE_NAME               "DVR_WORK_PIPEPLINE"
-#define VIDEO_SOURCE                "videotestsrc"
+#define VIDEO_SOURCE                "videotestsrc"                     //"filesrc"
 #define DAILY_MONITOR_SINK          "autovideosink"
 #define EMERGENCY_SINK              "autovideosink"
 #define HMI_SINK                    "autovideosink"
 #define VIDEO_SEGRECORD_SINK        "autovideosink"
     
-#define SNAPSHOOT_SINK              "autovideosink"
+#define SNAPSHOT_SINK               "multifilesink" 
 #define PICENC                      "pngenc"
-#define UDP_PHONE_SINK              "autovideosink"
+#define UDP_PHONE_SINK              "udpsink"
 #define UDP_CLOUD_SINK              "autovideosink"
 
 #include <map>

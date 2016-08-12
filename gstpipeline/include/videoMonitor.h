@@ -6,12 +6,14 @@
 #define DAILY_MONITOR_SINK          "autovideosink"
 #define EMERGENCY_SINK              "autovideosink"
 #define HMI_SINK                    "autovideosink"
-#define VIDEO_SEGRECORD_SINK        "autovideosink"
-    
+#define VIDEO_SEGRECORD_SINK        "filesink"
 #define SNAPSHOT_SINK               "multifilesink" 
-#define PICENC                      "pngenc"
 #define UDP_PHONE_SINK              "udpsink"
 #define UDP_CLOUD_SINK              "autovideosink"
+
+#define PICENC                      "pngenc"
+#define VIDEO_ENC4                  "vp8enc"
+#define VIDEO_MUX                   "avimux"
 
 #include <map>
 #include <iostream>
@@ -63,9 +65,11 @@ private:
     void    workModeChangedCallBack();                                       //Notify UI of the changes of the work mode
     void    setPipelineBusandSignal();                                       //Set the bus and signal of the gst pipeline                                  
     static void    gstErrorCallBack(GstBus *bus, GstMessage *msg);                                              //Retrieve errors from the bus               
-    
+    static void    pipelineEOSCallBack(GstBus *bus, GstMessage *msg);
     void    logout();   //Logging   
     void    finalize(); //Clear the resource
+    //void    busCallback(GstBus *bus, GstMessage *message, gpointer data);
+    void    modeChangeRecordToDailyCB();
 
     t_int modeChangeDailyToEmergency(void *msg, void *data);
     t_int modeChangeDailyToCapture(void *msg, void *data);

@@ -18,10 +18,10 @@ public:
     GstElement *mBin1,*mBin2,*mBin3,*mBin4,*mBin5,*mBin6,*mBin7;
     GstElement *mQueue1,*mQueue2,*mQueue3,*mQueue4,*mQueue5,*mQueue6,*mQueue7;
     GstElement *mTextOverlay1,*mTextOverlay2,*mTextOverlay3,*mTextOverlay4,*mTextOverlay5,*mTextOverlay6,*mTextOverlay7;
-    GstElement *mDailyMonitorSink,*mFFmpegcolorspace1,*mFFmpegcolorspace2,*mDecodeBin;
+    GstElement *mDailyMonitorSink;
     GstElement *mEmergencySink;
     GstElement *mHMISink;
-    GstElement *mVideoSegRecordSink;
+    GstElement *mVideoSegRecordSink,*mVideoEnc4,*mVideoMux;
     GstElement *mSnapshotSink,*mPicFormat;
     GstElement *mUdpPhoneSink;
     GstElement *mUdpCloudSink;
@@ -31,6 +31,8 @@ public:
     GstPad *mBinPad1,*mBinPad2,*mBinPad3,*mBinPad4,*mBinPad5,*mBinPad6,*mBinPad7;
     GstPad *mQueuePad1,*mQueuePad2,*mQueuePad3,*mQueuePad4,*mQueuePad5,*mQueuePad6,*mQueuePad7;
 
+    GstClockTime mGstSysTime;
+    GstClock *mGstSysClock;
     GstBus* mGstBus;
     GError* mError;
 };

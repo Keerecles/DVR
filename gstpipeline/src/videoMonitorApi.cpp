@@ -27,6 +27,7 @@ void *VideoMonitor::gstMainThread(void *data)
   	g_main_context_push_thread_default(mInstance->mContext);
     /* init the gstreamer*/
     //gst_init(NULL,NULL);
+    mInstance->mGstPipeline.mGstSysClock = gst_system_clock_obtain();
     if(!gst_init_check (NULL,NULL,&mInstance->mGstPipeline.mError))
     {
       LOGGER_DBG("VideoMonitor::gstMainThread gst init failed!");
@@ -35,7 +36,7 @@ void *VideoMonitor::gstMainThread(void *data)
   	/* Create the origin pipeline (Daily Mode) and play it*/
 	  mInstance->createOriginPipeline();
 	  /* Instruct the bus to emit signals for each received message, and connect to the interesting signals */
-	  //mInstance->setPipelineBusandSignal();
+	  mInstance->setPipelineBusandSignal();
 
 	  /*Check if all conditions are met to report GStreamer as initialized.*/
   	// gst_x_overlay_set_window_handle  getNativeWindow()
@@ -48,8 +49,32 @@ void *VideoMonitor::gstMainThread(void *data)
 
 
     sleep(3);
-    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToCapture!!!");
+    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!");
     mInstance->modeChangeDailyToCapture(NULL, NULL);
+    sleep(1);
+    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!");
+    mInstance->modeChangeDailyToCapture(NULL, NULL);
+    sleep(1);
+    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!");
+    mInstance->modeChangeDailyToCapture(NULL, NULL);
+    sleep(1);
+    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!");
+    mInstance->modeChangeDailyToCapture(NULL, NULL);
+    sleep(1);
+    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!");
+    mInstance->modeChangeDailyToCapture(NULL, NULL);
+
+
+
+    sleep(2);
+    // LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!!!!!");
+    mInstance->modeChangeDailyToRecord(NULL, NULL);
+
+  
+    
+    //mInstance->mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
+    LOGGER_DBG("VideoMonitor::gstMainThread modeChangeDailyToRecord!!!");
+    //mInstance->modeChangeDailyToCapture(NULL, NULL);
 
     // sleep(3);
     // mInstance->modeChangeCaptureToDaily(psMessage, psMessage);
@@ -97,10 +122,7 @@ void VideoMonitor::createElements()
   mGstPipeline.mPipeline = gst_pipeline_new (PIPELINE_NAME);
   /* Create the elements */
   mGstPipeline.mVideoSrc = gst_element_factory_make (VIDEO_SOURCE, "mVideoSrc");
-  mGstPipeline.mDecodeBin = gst_element_factory_make("decodebin","mDecodeBin");
-  mGstPipeline.mFFmpegcolorspace1 = gst_element_factory_make("ffmpegcolorspace","mFFmpegcolorspace1");
-  mGstPipeline.mFFmpegcolorspace2 = gst_element_factory_make("ffmpegcolorspace","mFFmpegcolorspace2");
-
+  
   mGstPipeline.mTee       = gst_element_factory_make ("tee", "Tee");
   mGstPipeline.mBin1     = gst_bin_new ("mGstPipeline.mBin1");
   mGstPipeline.mBin2     = gst_bin_new ("mGstPipeline.mBin2");
@@ -134,7 +156,9 @@ void VideoMonitor::createElements()
   
   /*Elements for Video Segment record Pipeline*/
   mGstPipeline.mVideoSegRecordSink = gst_element_factory_make (VIDEO_SEGRECORD_SINK, "mVideoSegRecordSink");
-    
+  mGstPipeline.mVideoEnc4 = gst_element_factory_make(VIDEO_ENC4,"mVideoEnc4");
+  mGstPipeline.mVideoMux = gst_element_factory_make(VIDEO_MUX,"mVideoMux");  
+
   /*Elements for SnapShot Pipeline*/
   mGstPipeline.mSnapshotSink = gst_element_factory_make (SNAPSHOT_SINK, "mSnapshotSink");
   mGstPipeline.mPicFormat = gst_element_factory_make (PICENC, "mPicFormat");
@@ -153,7 +177,7 @@ void VideoMonitor::createElements()
       || !mGstPipeline.mDailyMonitorSink
       || !mGstPipeline.mEmergencySink
       || !mGstPipeline.mHMISink
-      || !mGstPipeline.mVideoSegRecordSink
+      || !mGstPipeline.mVideoSegRecordSink || !mGstPipeline.mVideoEnc4 || !mGstPipeline.mVideoMux
       || !mGstPipeline.mSnapshotSink || !mGstPipeline.mPicFormat
       || !mGstPipeline.mUdpPhoneSink
       || !mGstPipeline.mUdpCloudSink) 
@@ -169,14 +193,14 @@ void VideoMonitor::createElements()
 void VideoMonitor::configureElements()
 {
   /* Configure sink */
-  // g_object_set (mGstPipeline.mVideoSrc, "location", "/home/keerelces/Documents/Kee/AutomaticDriving/2015-8-24-002.avi", NULL);
+  //g_object_set (mGstPipeline.mVideoSrc, "do-timestamp", TRUE, NULL);//"location", "/home/keerelces/Documents/Kee/AutomaticDriving/2015-8-24-002.avi", NULL);
   // g_object_set (mGstPipeline.mDailyMonitorSink, "location", "/mnt/sdcard/DVRDATA/DAILY/", NULL);
   // g_object_set (mGstPipeline.mEmergencySink, "location", "/mnt/sdcard/DVRDATA/EMERGENCY/", NULL);
   // g_object_set (mGstPipeline.mHMISink, "width",1280,"height",720, NULL);
-  // g_object_set (mGstPipeline.mVideoSegRecordSink, "location", "/mnt/sdcard/DVRDATA/Vod", NULL);
-  g_object_set (mGstPipeline.mSnapshotSink, "location", "./mnt/sdcard/DVRDATA/Pic/frame%d.png", NULL);
+  g_object_set (mGstPipeline.mVideoSegRecordSink, "location", "./mnt/sdcard/DVRDATA/Vod/video.avi", NULL);
+  // g_object_set (mGstPipeline.mSnapshotSink, "location", "./mnt/sdcard/DVRDATA/Pic/frame%d.png", NULL);
   g_object_set (mGstPipeline.mPicFormat, "snapshot", FALSE , NULL);
-  g_object_set (mGstPipeline.mUdpPhoneSink, "host", "192.168.0.106", "port", 5000, NULL);  
+  //g_object_set (mGstPipeline.mUdpPhoneSink, "host", "192.168.0.106", "port", 5000, NULL);  
   // g_object_set (mGstPipeline.mUdpCloudSink, "host", "127.0.0.1", "port", 8004, NULL);
   
   /* Configure mTextOverlay */
@@ -199,7 +223,7 @@ void VideoMonitor::createBins()
   gst_bin_add_many(GST_BIN (mGstPipeline.mBin1), mGstPipeline.mQueue1, mGstPipeline.mTextOverlay1, mGstPipeline.mDailyMonitorSink, NULL);
   gst_bin_add_many(GST_BIN (mGstPipeline.mBin2), mGstPipeline.mQueue2, mGstPipeline.mTextOverlay2, mGstPipeline.mEmergencySink, NULL);
   gst_bin_add_many(GST_BIN (mGstPipeline.mBin3), mGstPipeline.mQueue3, mGstPipeline.mTextOverlay3, mGstPipeline.mHMISink, NULL);
-  gst_bin_add_many(GST_BIN (mGstPipeline.mBin4), mGstPipeline.mQueue4, mGstPipeline.mTextOverlay4, mGstPipeline.mVideoSegRecordSink, NULL);
+  gst_bin_add_many(GST_BIN (mGstPipeline.mBin4), mGstPipeline.mQueue4, mGstPipeline.mTextOverlay4, mGstPipeline.mVideoEnc4, mGstPipeline.mVideoMux, mGstPipeline.mVideoSegRecordSink, NULL);
   gst_bin_add_many(GST_BIN (mGstPipeline.mBin5), mGstPipeline.mQueue5, mGstPipeline.mPicFormat, mGstPipeline.mTextOverlay5, mGstPipeline.mSnapshotSink, NULL);
   gst_bin_add_many(GST_BIN (mGstPipeline.mBin6), mGstPipeline.mQueue6, mGstPipeline.mTextOverlay6, mGstPipeline.mUdpPhoneSink, NULL);
   gst_bin_add_many(GST_BIN (mGstPipeline.mBin7), mGstPipeline.mQueue7, mGstPipeline.mTextOverlay7, mGstPipeline.mUdpCloudSink, NULL);
@@ -209,7 +233,7 @@ void VideoMonitor::createBins()
       gst_element_link_many (mGstPipeline.mQueue1, mGstPipeline.mTextOverlay1, mGstPipeline.mDailyMonitorSink, NULL) != TRUE ||
       gst_element_link_many (mGstPipeline.mQueue2, mGstPipeline.mTextOverlay2, mGstPipeline.mEmergencySink, NULL) != TRUE ||
       gst_element_link_many (mGstPipeline.mQueue3, mGstPipeline.mTextOverlay3, mGstPipeline.mHMISink, NULL) != TRUE ||
-      gst_element_link_many (mGstPipeline.mQueue4, mGstPipeline.mTextOverlay4, mGstPipeline.mVideoSegRecordSink, NULL) != TRUE ||
+      gst_element_link_many (mGstPipeline.mQueue4, mGstPipeline.mTextOverlay4, mGstPipeline.mVideoEnc4, mGstPipeline.mVideoMux, mGstPipeline.mVideoSegRecordSink, NULL) != TRUE ||
       gst_element_link_many (mGstPipeline.mQueue5, mGstPipeline.mTextOverlay5, mGstPipeline.mPicFormat, mGstPipeline.mSnapshotSink, NULL) != TRUE ||
       gst_element_link_many (mGstPipeline.mQueue6, mGstPipeline.mTextOverlay6, mGstPipeline.mUdpPhoneSink, NULL) != TRUE ||
       gst_element_link_many (mGstPipeline.mQueue7, mGstPipeline.mTextOverlay7, mGstPipeline.mUdpCloudSink, NULL) != TRUE
@@ -325,8 +349,9 @@ void VideoMonitor::completePipeline()
 }              
 
 void VideoMonitor::pipelineStateChangedCallBack(GstBus *bus, GstMessage *msg)
-{
-	GstState old_state, new_state, pending_state;
+{   
+    LOGGER_DBG("VideoMonitor::pipelineStateChangedCallBack !");
+	  GstState old_state, new_state, pending_state;
   	gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
   	/* Only pay attention to messages coming from the pipeline, not its children */
   	if (GST_MESSAGE_SRC (msg) == GST_OBJECT (mInstance->mGstPipeline.mPipeline)) 
@@ -336,6 +361,30 @@ void VideoMonitor::pipelineStateChangedCallBack(GstBus *bus, GstMessage *msg)
     g_free (message);
   }
 }   
+
+void VideoMonitor::pipelineEOSCallBack(GstBus *bus, GstMessage *msg)
+{
+  LOGGER_DBG("VideoMonitor::pipelineEOSCallBack !");
+  switch(mInstance->mCurrentPipelineMode){
+    case PIPELINE_WORK_MODE_DAILY : 
+          break;
+    case PIPELINE_WORK_MODE_EMERGENCY :
+          break;
+    case PIPELINE_WORK_MODE_REMOTE :
+          break;
+    case PIPELINE_WORK_MODE_LOWPOWER :
+          break;
+    case PIPELINE_WORK_MODE_RECORD :
+          mInstance->modeChangeRecordToDailyCB();
+          break;
+    case PIPELINE_WORK_MODE_CAPTURE :
+          break;
+    case PIPELINE_WORK_MODE_ANY :
+          break;
+    default:
+          break;
+  }
+}
 
 void VideoMonitor::workModeChangedCallBack()
 {
@@ -352,9 +401,14 @@ void VideoMonitor::setPipelineBusandSignal()
 	/* Instruct the bus to emit signals for each received message, and connect to the interesting signals */
 	mGstPipeline.mGstBus = gst_element_get_bus (mGstPipeline.mPipeline);
 	gst_bus_add_signal_watch (mGstPipeline.mGstBus);
-  	g_signal_connect (G_OBJECT (mGstPipeline.mGstBus), "message::error", (GCallback)gstErrorCallBack, NULL);
-	g_signal_connect (G_OBJECT (mGstPipeline.mGstBus), "message::state-changed", (GCallback)pipelineStateChangedCallBack, NULL);
-	gst_object_unref (mGstPipeline.mGstBus);
+#if 0 
+  /*New way to set bus which offering another way to chose */
+  gst_bus_add_watch (mGstPipeline.mGstBus, busCallback, NULL);  
+#endif
+  //g_signal_connect (G_OBJECT (mGstPipeline.mGstBus), "message::error", (GCallback)gstErrorCallBack, NULL);
+	//g_signal_connect (G_OBJECT (mGstPipeline.mGstBus), "message::state-changed", (GCallback)pipelineStateChangedCallBack, NULL);
+  g_signal_connect (G_OBJECT (mGstPipeline.mGstBus), "message::eos", (GCallback)pipelineEOSCallBack, NULL);
+	//gst_object_unref (mGstPipeline.mGstBus);
 }  
 
 void VideoMonitor::getNativeWindow()
@@ -364,14 +418,41 @@ void VideoMonitor::getNativeWindow()
 
 void VideoMonitor::gstErrorCallBack(GstBus *bus, GstMessage *msg)
 {
+  LOGGER_DBG("VideoMonitor::gstErrorCallBack !");
 	GError *err;
-  	gchar *debug_info;
-  	/* Print error details on the screen */
-  	gst_message_parse_error (msg, &err, &debug_info);
+  gchar *debug_info;
+	/* Print error details on the screen */
+  gst_message_parse_error (msg, &err, &debug_info);
 	g_clear_error (&err);
 	g_free (debug_info);
+  LOGGER_DBG("VideoMonitor::gstErrorCallBack g_main_loop_quit !");
 	g_main_loop_quit (mInstance->mPluginGMainLoop);
-}                       
+  LOGGER_DBG("VideoMonitor::gstErrorCallBack end!");
+  return ;
+}     
+
+// void VideoMonitor::busCallback(GstBus *bus, GstMessage *message, gpointer data)
+// {
+//     switch (GST_MESSAGE_TYPE (message)) {
+//         case GST_MESSAGE_ERROR: {
+//               // GError *err;
+//               // gchar *debug;
+//               // gst_message_parse_error (message, &err, &debug);
+//               // g_print ("Error: %s\n", err->message);
+//               // g_error_free (err);
+//               // g_free (debug);
+//               // g_main_loop_quit (loop);
+//               // break;
+//               }
+//         case GST_MESSAGE_EOS:
+//               /* end-of-stream */
+//               modeChangeRecordToDailyCB();
+//               break;
+//         default:
+//               /* unhandled message */
+//               break;
+//     }
+// }                  
 
 void VideoMonitor::logout()
 {
@@ -381,6 +462,27 @@ void VideoMonitor::logout()
 void VideoMonitor::finalize()
 {
 
+}
+
+void VideoMonitor::modeChangeRecordToDailyCB()
+{
+    LOGGER_DBG("VideoMonitor::modeChangeRecordToDailyCB !");
+    mInstance->mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+
+    g_object_set (mGstPipeline.mVideoSrc, "num-buffers",-1, NULL);
+    /*Stop the Record Mode Bin*/
+    gst_element_set_state (mInstance->mGstPipeline.mBin4, GST_STATE_NULL);
+    if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad4,mInstance->mGstPipeline.mBinPad4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToDailyCB Record Bins (mBinPad4) failed to unlink!");
+    }
+    if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin4))
+    {
+      LOGGER_DBG("VideoMonitor::modeChangeRecordToDailyCB Record Bins (mBinPad4) failed to remove!");
+    }
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+    return ;
 }
 
 /*Function to change the mode of pipeline*/
@@ -428,14 +530,21 @@ t_int VideoMonitor::modeChangeDailyToCapture(void *msg, void *data)
     //gst_element_set_state (mInstance->mGstPipeline.mBin1, GST_STATE_READY);
     if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad1,mInstance->mGstPipeline.mBinPad1))
     {
-      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to unlink!");
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture Remote Bins (mBinPad6) failed to unlink!");
     }
     if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin1))
     {
-      LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to remove!");
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture Remote Bins (mBinPad6) failed to remove!");
     }
 
     /*Start Capture*/
+    char image_name[200];
+    int time ;
+    mInstance->mGstPipeline.mGstSysTime = gst_clock_get_time(mInstance->mGstPipeline.mGstSysClock);
+    time = static_cast<int>(mInstance->mGstPipeline.mGstSysTime);
+    sprintf(image_name,"%s%d.png","./mnt/sdcard/DVRDATA/Pic/frame",time);
+
+    g_object_set (mGstPipeline.mSnapshotSink, "location", image_name, NULL);
     if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin5))
     {
       LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture Capture Bin (mBin5) failed to add!");
@@ -458,11 +567,11 @@ t_int VideoMonitor::modeChangeDailyToCapture(void *msg, void *data)
       gst_element_set_state (mInstance->mGstPipeline.mBin5, GST_STATE_NULL);
       if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5))
       {
-        LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to unlink!");
+        LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture Remote Bins (mBinPad6) failed to unlink!");
       }
       if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin5))
       {
-        LOGGER_DBG("VideoMonitor::modeChangeRemoteToEmergency Remote Bins (mBinPad6) failed to remove!");
+        LOGGER_DBG("VideoMonitor::modeChangeDailyToCapture Remote Bins (mBinPad6) failed to remove!");
       }
       
       if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin1))
@@ -489,18 +598,86 @@ t_int VideoMonitor::modeChangeDailyToRecord(void *msg, void *data)
     // }
     // Message *ctxMsg = static_cast<Message *>(msg);
     
+    if(mCurrentPipelineMode != PIPELINE_WORK_MODE_DAILY){
+        LOGGER_DBG("ERROR VideoMonitor::modeChangeDailyToRecord Current work mode don't match!");
+    }
+    mCurrentPipelineMode = PIPELINE_WORK_MODE_RECORD;
+    
+    /*Stop DailyMonitor*/
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Stop the DailyMonitor!");
+    gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    // if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad1,mInstance->mGstPipeline.mBinPad1))
+    // {
+    //   LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Remote Bins (mBinPad6) failed to unlink!");
+    // }
+    // if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin1))
+    // {
+    //   LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Remote Bins (mBinPad6) failed to remove!");
+    // }
+
+    /*Start record*/
+    LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Start the VideoRecord!");
     if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin4))
     {
-      LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Record Bin (mBin4) failed to add!");
+      LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Capture Bin (mBin4) failed to add!");
     }
-    gst_pad_link (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad4);
+    gst_pad_link (mInstance->mGstPipeline.mTeePad4,mInstance->mGstPipeline.mBinPad4);
+    
+    g_object_set (mGstPipeline.mVideoSegRecordSink, "num-buffers",300, NULL);
+
     gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
     gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+    /*Block the pipeline until the state change has been completed*/
+    GstState curState = GST_STATE_VOID_PENDING;
+    GstState nextState = GST_STATE_VOID_PENDING;
+    gst_element_get_state (mInstance->mGstPipeline.mPipeline,&curState, &nextState, GST_CLOCK_TIME_NONE);   
+    
+    switch(curState){
+        case GST_STATE_PLAYING:
+        LOGGER_DBG("curState = GST_STATE_PLAYING");
+        break;
+        case GST_STATE_NULL:
+        LOGGER_DBG("curState = GST_STATE_NULL");
+        break;
+        case GST_STATE_PAUSED:
+        LOGGER_DBG("curState = GST_STATE_PAUSED");
+        break;
+        case GST_STATE_READY:
+        LOGGER_DBG("curState = GST_STATE_READY");
+        break;
+        case GST_STATE_VOID_PENDING:
+        LOGGER_DBG("curState = GST_STATE_VOID_PENDING");
+    } 
 
+
+
+    // if(curState == GST_STATE_PLAYING){
+    //   /*Set the VideoSrc to normal state*/
+    //   LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Set the VideoSrc to normal state!");
+    //   g_object_set (mGstPipeline.mVideoSrc, "num-buffers",-1, NULL);
+    //   /*Stop the Snapshot Mode Bin*/
+    //   gst_element_set_state (mInstance->mGstPipeline.mBin5, GST_STATE_NULL);
+    //   if(!gst_pad_unlink (mInstance->mGstPipeline.mTeePad5,mInstance->mGstPipeline.mBinPad5))
+    //   {
+    //     LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Remote Bins (mBinPad6) failed to unlink!");
+    //   }
+    //   if(!gst_bin_remove (GST_BIN(mInstance->mGstPipeline.mPipeline),mInstance->mGstPipeline.mBin5))
+    //   {
+    //     LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Remote Bins (mBinPad6) failed to remove!");
+    //   }
+      
+    //   if(!gst_bin_add(GST_BIN (mInstance->mGstPipeline.mPipeline), mInstance->mGstPipeline.mBin1))
+    //   {
+    //     LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord Capture Bin (mBin1) failed to add!");
+    //   }
+    //   gst_pad_link (mInstance->mGstPipeline.mTeePad1,mInstance->mGstPipeline.mBinPad1);
+    //   gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_READY);
+    //   gst_element_set_state (mInstance->mGstPipeline.mPipeline, GST_STATE_PLAYING);
+    //   mCurrentPipelineMode = PIPELINE_WORK_MODE_DAILY;
+    // }
     LOGGER_DBG("VideoMonitor::modeChangeDailyToRecord end!");
 
     //delete ctxMsg;
-    mCurrentPipelineMode = PIPELINE_WORK_MODE_RECORD;
     return E_OPERATION_ERROR_NONE;
 }
 t_int VideoMonitor::modeChangeDailyToRemote(void *msg, void *data)
